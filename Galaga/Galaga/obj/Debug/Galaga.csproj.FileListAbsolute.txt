@@ -1,0 +1,11 @@
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Galaga.exe.config
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Galaga.exe
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Galaga.pdb
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\OpenTK.dll
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\OpenTK.xml
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\obj\Debug\Galaga.csprojResolveAssemblyReference.cache
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\obj\Debug\Galaga.csproj.CoreCompileInputs.cache
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\obj\Debug\Galaga.exe
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\obj\Debug\Galaga.pdb
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\background.png
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\FTLship.png
