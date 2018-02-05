@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
+using System.Drawing;
+
 
 namespace Galaga
 {
@@ -16,11 +18,7 @@ namespace Galaga
         #region variables
         Player player;
         Texture backgroundTexture;
-
-        private float ProjectionWidth;
-        private float ProjectionHeight;
-        private const int NominalWidth = 700;
-        private const int NominalHeight = 500;
+        int isKeyPressed = 0;
         #endregion
 
         static void Main()
@@ -31,9 +29,33 @@ namespace Galaga
             }
         }
 
-        public Program() : base(700, 500, GraphicsMode.Default, "Galaga")
+        public Program() : base((int)GlobalVariables.GetWindowSize().X, (int)GlobalVariables.GetWindowSize().Y, GraphicsMode.Default, "Galaga")
         {
             VSync = VSyncMode.On;
+            Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(OnKeyDown);
+            Keyboard.KeyUp += new EventHandler<KeyboardKeyEventArgs>(OnKeyUp);
+        }
+
+        protected void OnKeyDown(object Sender, KeyboardKeyEventArgs E)
+        {
+            if (Key.Left == E.Key)
+            {
+                isKeyPressed ++;
+                player.Moving(-1);
+            }
+            if (Key.Right == E.Key)
+            {
+                isKeyPressed ++;
+                player.Moving(1);
+            }
+        }
+
+        protected void OnKeyUp(object Sender, KeyboardKeyEventArgs E)
+        {
+            if (Key.Space != E.Key)
+            {
+                isKeyPressed --;
+            }
         }
 
         protected override void OnLoad(EventArgs E)
@@ -54,26 +76,39 @@ namespace Galaga
             base.OnResize(E);
             GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
-            ProjectionWidth = NominalWidth;
-            ProjectionHeight = (float)ClientRectangle.Height / (float)ClientRectangle.Width * ProjectionWidth;
-            if (ProjectionHeight < NominalHeight)
+//как минимум пока что, нафиг вообще какую либо смену размеров
+//            ProjectionWidth = NominalWidth;
+//            ProjectionHeight = (float)ClientRectangle.Height / (float)ClientRectangle.Width * ProjectionWidth;
+//            if (ProjectionHeight < NominalHeight)
+//            {
+//                ProjectionHeight = NominalHeight;
+//                ProjectionWidth = (float)ClientRectangle.Width / (float)ClientRectangle.Height * ProjectionHeight;
+//            }
+            if (ClientSize.Width < (int)GlobalVariables.GetWindowSize().X)
             {
-                ProjectionHeight = NominalHeight;
-                ProjectionWidth = (float)ClientRectangle.Width / (float)ClientRectangle.Height * ProjectionHeight;
+                ClientSize = new Size((int)GlobalVariables.GetWindowSize().X, ClientSize.Height);
             }
-            if (ClientSize.Width < NominalWidth)
+            if (ClientSize.Height < (int)GlobalVariables.GetWindowSize().Y)
             {
-                ClientSize = new Size(NominalWidth, ClientSize.Height);
+                ClientSize = new Size(ClientSize.Width, (int)GlobalVariables.GetWindowSize().Y);
             }
-            if (ClientSize.Height < NominalHeight)
+            if (ClientSize.Width > (int)GlobalVariables.GetWindowSize().X)
             {
-                ClientSize = new Size(ClientSize.Width, NominalHeight);
+                ClientSize = new Size((int)GlobalVariables.GetWindowSize().X, ClientSize.Height);
             }
+            if (ClientSize.Height > (int)GlobalVariables.GetWindowSize().Y)
+            {
+                ClientSize = new Size(ClientSize.Width, (int)GlobalVariables.GetWindowSize().Y);
+            }
+
         }
 
         protected override void OnUpdateFrame(FrameEventArgs E)
         {
             base.OnUpdateFrame(E);
+            if (isKeyPressed !=0) player.Moving();  
+            //на самом деле этот метод вероятно не очень правильный
+            //ибо в таком варианте оно позволяет перемещать игрока в противоположном направленному направлении
         }
 
         protected override void OnRenderFrame(FrameEventArgs E)

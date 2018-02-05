@@ -19,10 +19,11 @@ namespace Galaga
     {
         private int lifeNum;
         private int score;
+        private int prevMoveDirection;
 
-        public Player(String textureName)
+        public Player(String textureName)//возможно стоит юзать заранее подготовленную текстуру
         {
-            position.X = 0;
+            position.X = -7;
             position.Y = 0;
             lifeNum = 3;
             score = 0;
@@ -34,9 +35,18 @@ namespace Galaga
         public void AddToScore(int addedScore) { score += addedScore; }
         public void Moving(int direction)
         {
-            if (direction > 0) position.X += 0.1;   //вправо
-            if (direction < 0) position.X -= 0.1;   //влево
+            if (direction > 0)
+            {
+                position.X += 0.1;   //вправо
+                prevMoveDirection = 1;
+            }
+            if (direction < 0)
+            {
+                position.X -= 0.1;   //влево
+                prevMoveDirection = -1;
+            }
         }
+        public void Moving() { Moving(prevMoveDirection); }
 
     }
 }
