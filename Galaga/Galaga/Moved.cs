@@ -15,5 +15,6 @@ namespace Galaga
 
         public Vector2 GetPos() { return position; }
         public Vector2 GetVel() { return velocity; }
+        public void Moving() { position += velocity; }
     }
 }

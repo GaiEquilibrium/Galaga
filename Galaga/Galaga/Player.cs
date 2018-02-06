@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
 //содержит переменные:
 //  текущее положение
 //  указание на текстуру
@@ -37,16 +39,21 @@ namespace Galaga
         {
             if (direction > 0)
             {
-                position.X += 0.1F;   //вправо
+                position.X += 0.15F;   //вправо
                 prevMoveDirection = 1;
             }
             if (direction < 0)
             {
-                position.X -= 0.1F;   //влево
+                position.X -= 0.15F;   //влево
                 prevMoveDirection = -1;
             }
         }
         public void Moving() { Moving(prevMoveDirection); }
-
+        public Bullet Shoot()
+        {
+            Vector2 tmpPos = position;
+            tmpPos.Y++;
+            return new Bullet(tmpPos);
+        }
     }
 }

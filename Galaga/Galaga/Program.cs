@@ -18,8 +18,10 @@ namespace Galaga
         #region variables
         Player player;
         Texture backgroundTexture;
-        Enemy[] enemys = new Enemy[6];
+        List<Enemy> enemyList = new List<Enemy>();
+        List<Bullet> bullets = new List<Bullet>();
         Vector2 tmpEnemyOffset;
+        
 
         int isKeyPressed = 0;
         #endregion
@@ -31,14 +33,12 @@ namespace Galaga
                 Game.Run(30);
             }
         }
-
         public Program() : base((int)GlobalVariables.GetWindowSize().X, (int)GlobalVariables.GetWindowSize().Y, GraphicsMode.Default, "Galaga")
         {
             VSync = VSyncMode.On;
             Keyboard.KeyDown += new EventHandler<KeyboardKeyEventArgs>(OnKeyDown);
             Keyboard.KeyUp += new EventHandler<KeyboardKeyEventArgs>(OnKeyUp);
         }
-
         protected void OnKeyDown(object Sender, KeyboardKeyEventArgs E)
         {
             if (Key.Left == E.Key)
@@ -51,8 +51,11 @@ namespace Galaga
                 isKeyPressed ++;
                 player.Moving(1);
             }
+            if (Key.Space == E.Key)
+            {
+                bullets.Add(player.Shoot());
+            }
         }
-
         protected void OnKeyUp(object Sender, KeyboardKeyEventArgs E)
         {
             if (Key.Left == E.Key || Key.Right == E.Key)
@@ -60,7 +63,6 @@ namespace Galaga
                 isKeyPressed --;
             }
         }
-
         protected override void OnLoad(EventArgs E)
         {
             base.OnLoad(E);
@@ -76,13 +78,12 @@ namespace Galaga
 
             for (int i = 0; i<6; i++)
             {
-                enemys[i] = new Enemy(0, "Texture/Enemy1_1.png", tmpEnemyOffset);
+                enemyList.Add(new Enemy(0, "Texture/Enemy1_1.png", tmpEnemyOffset));
                 tmpEnemyOffset.X ++;
             }
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
         }
-
         protected override void OnResize(EventArgs E)
         {
             base.OnResize(E);
@@ -114,7 +115,6 @@ namespace Galaga
             }
 
         }
-
         protected override void OnUpdateFrame(FrameEventArgs E)
         {
             base.OnUpdateFrame(E);
@@ -123,8 +123,31 @@ namespace Galaga
             //ибо в таком варианте оно позволяет перемещать игрока в противоположном направленному направлении
 
             GlobalVariables.MoveCenterEnemyPosition();
-        }
+            foreach (Bullet bullet in bullets) { bullet.Moving(); }
 
+            //немного хитра проверка попадания, надо будет проверить, не ли варианта лучше
+            bool tmpIsHit = false;
+            bool tmpIsAll = false;
+            while (!tmpIsAll)
+            {
+                foreach (Enemy enemy in enemyList)
+                {
+                    foreach (Bullet bullet in bullets)
+                    {
+                        if (IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset())))
+                        {
+                            enemyList.Remove(enemy);
+                            bullets.Remove(bullet);
+                            tmpIsHit = true;
+                            break;
+                        }
+                    }
+                    if (tmpIsHit) break;
+                }
+                if (tmpIsHit) tmpIsHit = false;
+                else tmpIsAll = true;
+            }
+        }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
             base.OnRenderFrame(E);
@@ -138,11 +161,12 @@ namespace Galaga
             RenderBackground();
             player.RenderObject(player.GetPos());
 
-            for (int i = 0; i < 6; i++) enemys[i].RenderObject();
-            
+            //for (int i = 0; i < 6; i++) enemys[i].RenderObject();
+            foreach (Enemy enemy in enemyList) { enemy.RenderObject(); }
+            foreach (Bullet bullet in bullets) { bullet.RenderObject(bullet.GetPos()); }
+
             SwapBuffers();
         }
-
         private void RenderBackground()
         {
             backgroundTexture.Bind();
@@ -175,6 +199,14 @@ namespace Galaga
             GL.Vertex2(-1, 1);
 
             GL.End();
+        }
+        private bool IsHit(Vector2 bulletPos, Vector2 shipPos)
+        {
+            if (((bulletPos.X + 0.6F) > shipPos.X) && ((bulletPos.X + 0.4F) < (shipPos.X + 1)) &&
+                ((bulletPos.Y + 0.95F) > shipPos.Y) && ((bulletPos.Y + 0.05F) < (shipPos.Y + 1)))
+                return true;
+
+            return false;
         }
     }
 }

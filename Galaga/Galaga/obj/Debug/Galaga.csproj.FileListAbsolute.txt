@@ -11,3 +11,4 @@ C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\
 C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\FTLship.png
 C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\Enemy1_1.png
 C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\PlayerShip.png
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\Bullet.png
