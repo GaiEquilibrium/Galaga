@@ -9,3 +9,5 @@ C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\obj\Debug\Galaga.e
 C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\obj\Debug\Galaga.pdb
 C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\background.png
 C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\FTLship.png
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\Enemy1_1.png
+C:\Users\GaiEquilibrium\Documents\GitHub\Galaga\Galaga\Galaga\bin\Debug\Texture\PlayerShip.png

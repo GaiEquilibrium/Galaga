@@ -15,11 +15,8 @@ namespace Galaga
     {
         private Texture texture;
 
-        public void RenderObject(Vector2d Coords, double objectSize)   //хммм
+        public void RenderObject(Vector2 Coords)   //хммм
         {
-            //тест
-            objectSize = 0.1;
-
             texture.Bind();
 //            GL.Color4(Color4.White);
             GL.Begin(BeginMode.Quads);

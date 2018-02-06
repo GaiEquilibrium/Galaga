@@ -18,6 +18,9 @@ namespace Galaga
         #region variables
         Player player;
         Texture backgroundTexture;
+        Enemy[] enemys = new Enemy[6];
+        Vector2 tmpEnemyOffset;
+
         int isKeyPressed = 0;
         #endregion
 
@@ -52,7 +55,7 @@ namespace Galaga
 
         protected void OnKeyUp(object Sender, KeyboardKeyEventArgs E)
         {
-            if (Key.Space != E.Key)
+            if (Key.Left == E.Key || Key.Right == E.Key)
             {
                 isKeyPressed --;
             }
@@ -66,8 +69,17 @@ namespace Galaga
             GL.Enable(EnableCap.Blend);
 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            
+            player = new Player("Texture/PlayerShip.png");
+            tmpEnemyOffset.X = -3;
+            tmpEnemyOffset.Y = 2;
 
-            player = new Player("Texture/FTLship.png");
+            for (int i = 0; i<6; i++)
+            {
+                enemys[i] = new Enemy(0, "Texture/Enemy1_1.png", tmpEnemyOffset);
+                tmpEnemyOffset.X ++;
+            }
+
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
         }
 
@@ -106,9 +118,11 @@ namespace Galaga
         protected override void OnUpdateFrame(FrameEventArgs E)
         {
             base.OnUpdateFrame(E);
-            if (isKeyPressed !=0) player.Moving();  
+            if (isKeyPressed !=0) player.Moving();
             //на самом деле этот метод вероятно не очень правильный
             //ибо в таком варианте оно позволяет перемещать игрока в противоположном направленному направлении
+
+            GlobalVariables.MoveCenterEnemyPosition();
         }
 
         protected override void OnRenderFrame(FrameEventArgs E)
@@ -122,8 +136,10 @@ namespace Galaga
 
             RenderBackground();
             RenderBackground();
-            player.RenderObject(player.GetPos(), 35);
+            player.RenderObject(player.GetPos());
 
+            for (int i = 0; i < 6; i++) enemys[i].RenderObject();
+            
             SwapBuffers();
         }
 

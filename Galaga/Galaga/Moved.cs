@@ -10,10 +10,10 @@ namespace Galaga
 {
     class Moved : Object
     {
-        protected Vector2d position;
-        protected Vector2d velocity;
+        protected Vector2 position;
+        protected Vector2 velocity;
 
-        public Vector2d GetPos() { return position; }
-        public Vector2d GetVel() { return velocity; }
+        public Vector2 GetPos() { return position; }
+        public Vector2 GetVel() { return velocity; }
     }
 }

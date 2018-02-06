@@ -21,15 +21,23 @@ namespace Galaga
 {
     class Enemy : Moved
     {
-        private Vector2d CenterOffset;
+        private Vector2 centerOffset;
         private int cost;
-
-        public Enemy(int cost, String textureName)
+        
+        public Enemy(int cost, String textureName, Vector2 newCentralOffset)
         {
             this.cost = cost;
             SetTexture(textureName);
+            centerOffset = newCentralOffset;
+
+            velocity.X = 0;
+            velocity.Y = 0;
         }
-        public Vector2d GetYCenterOffset() { return CenterOffset; }
+        public Vector2 GetCenterOffset() { return centerOffset; }
         public int GetCost() { return cost; }
+        public void RenderObject()
+        {
+            if (velocity.X == 0) { RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset); }
+        }
     }
 }

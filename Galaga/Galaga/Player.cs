@@ -23,8 +23,8 @@ namespace Galaga
 
         public Player(String textureName)//возможно стоит юзать заранее подготовленную текстуру
         {
-            position.X = -7;
-            position.Y = 0;
+            position.X = -0.5F;
+            position.Y = -5;
             lifeNum = 3;
             score = 0;
             SetTexture(textureName);
@@ -37,12 +37,12 @@ namespace Galaga
         {
             if (direction > 0)
             {
-                position.X += 0.1;   //вправо
+                position.X += 0.1F;   //вправо
                 prevMoveDirection = 1;
             }
             if (direction < 0)
             {
-                position.X -= 0.1;   //влево
+                position.X -= 0.1F;   //влево
                 prevMoveDirection = -1;
             }
         }
