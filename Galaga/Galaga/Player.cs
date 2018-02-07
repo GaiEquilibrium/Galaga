@@ -48,7 +48,7 @@ namespace Galaga
                 prevMoveDirection = -1;
             }
         }
-        public void Moving() { Moving(prevMoveDirection); }
+        public new void Moving() { Moving(prevMoveDirection); }
         public Bullet Shoot()
         {
             Vector2 tmpPos = position;

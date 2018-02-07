@@ -21,11 +21,10 @@ namespace Galaga
         List<Enemy> enemyList = new List<Enemy>();
         List<Bullet> bullets = new List<Bullet>();
         Vector2 tmpEnemyOffset;
-        
 
+        Random randomizer;
         int isKeyPressed = 0;
         #endregion
-
         static void Main()
         {
             using (var Game = new Program())
@@ -71,7 +70,9 @@ namespace Galaga
             GL.Enable(EnableCap.Blend);
 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            
+
+            randomizer = new Random();
+
             player = new Player("Texture/PlayerShip.png");
             tmpEnemyOffset.X = -3;
             tmpEnemyOffset.Y = 2;
@@ -130,11 +131,18 @@ namespace Galaga
             bool tmpIsAll = false;
             while (!tmpIsAll)
             {
-                foreach (Enemy enemy in enemyList)
+                foreach (Bullet bullet in bullets)
                 {
-                    foreach (Bullet bullet in bullets)
+                    foreach (Enemy enemy in enemyList)
                     {
-                        if (IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset())))
+                        if (!enemy.GetIsMoving() && IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset())))
+                        {
+                            enemyList.Remove(enemy);
+                            bullets.Remove(bullet);
+                            tmpIsHit = true;
+                            break;
+                        }
+                        if (enemy.GetIsMoving() && IsHit(bullet.GetPos(), enemy.GetPos()))
                         {
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
@@ -147,6 +155,18 @@ namespace Galaga
                 if (tmpIsHit) tmpIsHit = false;
                 else tmpIsAll = true;
             }
+
+            foreach (Enemy enemy in enemyList)
+            {
+                if (enemy.GetIsMoving()) enemy.Moving(player.GetPos());
+            }
+
+            //=====================================тестовый кусок======================================================
+            foreach (Enemy enemy in enemyList)
+            {
+                if (randomizer.Next(0, 1000) > 995 && !enemy.GetIsMoving()) enemy.StartMove(player.GetPos());
+            }
+            //=========================================================================================================
         }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
@@ -203,7 +223,7 @@ namespace Galaga
         private bool IsHit(Vector2 bulletPos, Vector2 shipPos)
         {
             if (((bulletPos.X + 0.6F) > shipPos.X) && ((bulletPos.X + 0.4F) < (shipPos.X + 1)) &&
-                ((bulletPos.Y + 0.95F) > shipPos.Y) && ((bulletPos.Y + 0.05F) < (shipPos.Y + 1)))
+                ((bulletPos.Y + 0.9F) > shipPos.Y) && ((bulletPos.Y + 0.1F) < (shipPos.Y + 1)))
                 return true;
 
             return false;
