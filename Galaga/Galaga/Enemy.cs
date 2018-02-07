@@ -60,6 +60,11 @@ namespace Galaga
             if (position.Y < -5) position.Y = 4;//поменять на высчитываемое значение
         }
         public bool GetIsMoving() { return isMoving; }
-
+        public Bullet Shoot()
+        {
+            Vector2 tmpPos = position;
+            tmpPos.Y--;
+            return new Bullet(tmpPos, false);
+        }
     }
 }

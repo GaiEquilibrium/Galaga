@@ -52,7 +52,7 @@ namespace Galaga
             }
             if (Key.Space == E.Key)
             {
-                bullets.Add(player.Shoot());
+                if (player.CanShoot) bullets.Add(player.Shoot());
             }
         }
         protected void OnKeyUp(object Sender, KeyboardKeyEventArgs E)
@@ -79,8 +79,13 @@ namespace Galaga
 
             for (int i = 0; i<6; i++)
             {
-                enemyList.Add(new Enemy(0, "Texture/Enemy1_1.png", tmpEnemyOffset));
-                tmpEnemyOffset.X ++;
+                for (int j = 0; j < 3; j++)
+                {
+                    enemyList.Add(new Enemy(0, "Texture/Enemy1_1.png", tmpEnemyOffset));
+                    tmpEnemyOffset.Y++;
+                }
+                tmpEnemyOffset.X++;
+                tmpEnemyOffset.Y = 2;
             }
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
@@ -124,6 +129,7 @@ namespace Galaga
             //ибо в таком варианте оно позволяет перемещать игрока в противоположном направленному направлении
 
             GlobalVariables.MoveCenterEnemyPosition();
+
             foreach (Bullet bullet in bullets) { bullet.Moving(); }
 
             //немного хитра проверка попадания, надо будет проверить, не ли варианта лучше
@@ -135,14 +141,14 @@ namespace Galaga
                 {
                     foreach (Enemy enemy in enemyList)
                     {
-                        if (!enemy.GetIsMoving() && IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset())))
+                        if (!enemy.GetIsMoving() && IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset()), false, bullet.IsPlayerOwner()))
                         {
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
                             tmpIsHit = true;
                             break;
                         }
-                        if (enemy.GetIsMoving() && IsHit(bullet.GetPos(), enemy.GetPos()))
+                        if (enemy.GetIsMoving() && IsHit(bullet.GetPos(), enemy.GetPos(), false, bullet.IsPlayerOwner()))
                         {
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
@@ -150,10 +156,32 @@ namespace Galaga
                             break;
                         }
                     }
+                    if (IsHit(bullet.GetPos(), player.GetPos(), true, bullet.IsPlayerOwner()))
+                    {
+                        player.Reset();
+                        bullets.Remove(bullet);
+                        tmpIsHit = true;
+                    }
                     if (tmpIsHit) break;
                 }
                 if (tmpIsHit) tmpIsHit = false;
                 else tmpIsAll = true;
+            }
+
+            tmpIsAll = false;
+            player.CanShoot = true;
+            while (!tmpIsAll)
+            {
+                foreach (Bullet bullet in bullets)
+                {
+                    if (bullet.GetPos().Y > 11 || bullet.GetPos().Y < -11)
+                    {
+                        bullets.Remove(bullet);
+                        break;
+                    }
+                    if (bullet.GetVel().Y > 0) player.CanShoot = false;
+                }
+                tmpIsAll = true;
             }
 
             foreach (Enemy enemy in enemyList)
@@ -161,12 +189,11 @@ namespace Galaga
                 if (enemy.GetIsMoving()) enemy.Moving(player.GetPos());
             }
 
-            //=====================================тестовый кусок======================================================
             foreach (Enemy enemy in enemyList)
             {
-                if (randomizer.Next(0, 1000) > 995 && !enemy.GetIsMoving()) enemy.StartMove(player.GetPos());
+                if (randomizer.Next(0, 1000) > 990 && !enemy.GetIsMoving() && CanMove(enemy)) enemy.StartMove(player.GetPos());
+                if (enemy.GetIsMoving() && randomizer.Next(0, 1000) > 990) bullets.Add(enemy.Shoot());
             }
-            //=========================================================================================================
         }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
@@ -220,13 +247,35 @@ namespace Galaga
 
             GL.End();
         }
-        private bool IsHit(Vector2 bulletPos, Vector2 shipPos)
+        private bool IsHit(Vector2 bulletPos, Vector2 shipPos, bool isPlayer, bool bulletOwner)
         {
+            if (isPlayer == bulletOwner) return false;
             if (((bulletPos.X + 0.6F) > shipPos.X) && ((bulletPos.X + 0.4F) < (shipPos.X + 1)) &&
                 ((bulletPos.Y + 0.9F) > shipPos.Y) && ((bulletPos.Y + 0.1F) < (shipPos.Y + 1)))
                 return true;
 
             return false;
+        }
+        private bool CanMove(Enemy enemy)
+        {
+            if (enemy.GetCenterOffset().X >= 0)
+            {
+                foreach (Enemy enemyBuf in enemyList)
+                {
+                    if (enemyBuf.GetCenterOffset().X > enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
+                    if (enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && enemyBuf.GetCenterOffset().X == enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
+                }
+                return true;
+            }
+            else
+            {
+                foreach (Enemy enemyBuf in enemyList)
+                {
+                    if (enemyBuf.GetCenterOffset().X < enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
+                    if (enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && enemyBuf.GetCenterOffset().X == enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
+                }
+                return true;
+            }
         }
     }
 }

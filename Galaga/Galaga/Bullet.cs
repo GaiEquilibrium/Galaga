@@ -11,12 +11,15 @@ namespace Galaga
     //только методы на проверки столкновений (и возможно собственно методы уничтожения)
     class Bullet : Moved
     {
-        public Bullet(Vector2 startPosition)
+        private bool owner; //true - player, false - enemy
+        public Bullet(Vector2 startPosition, bool newOwner)
         {
             position = startPosition;
-            velocity.Y = 0.3F;
-
+            owner = newOwner;
+            if (newOwner) velocity.Y = 0.5F;
+            else velocity.Y = -0.5F;
             SetTexture("Texture/Bullet.png");
         }
+        public bool IsPlayerOwner() { return owner; }
     }
 }

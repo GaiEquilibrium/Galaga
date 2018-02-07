@@ -22,11 +22,12 @@ namespace Galaga
         private int lifeNum;
         private int score;
         private int prevMoveDirection;
+        public bool CanShoot;
 
         public Player(String textureName)//возможно стоит юзать заранее подготовленную текстуру
         {
             position.X = -0.5F;
-            position.Y = -5;
+            position.Y = -7;
             lifeNum = 3;
             score = 0;
             SetTexture(textureName);
@@ -53,7 +54,14 @@ namespace Galaga
         {
             Vector2 tmpPos = position;
             tmpPos.Y++;
-            return new Bullet(tmpPos);
+            return new Bullet(tmpPos,true);
+        }
+        public void Reset()
+        {
+            lifeNum--;
+            position.X = -0.5F;
+            if (lifeNum > 0) { position.Y = -7; }
+            else { position.Y = 20; }
         }
     }
 }

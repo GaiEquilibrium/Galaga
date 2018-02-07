@@ -30,8 +30,8 @@ namespace Galaga
         static public Vector2 GetCenterEnemyPosition() { return centerEnemyPosition; }
         static public void MoveCenterEnemyPosition()
         {
-            if (centerEnemyPosition.X > 5) centerMove = -0.1F;
-            if (centerEnemyPosition.X < -5) centerMove = 0.1F;
+            if (centerEnemyPosition.X > 5) centerMove = -0.05F;
+            if (centerEnemyPosition.X < -5) centerMove = 0.05F;
 
             centerEnemyPosition.X += centerMove;
         }
