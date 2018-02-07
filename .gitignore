@@ -1,4 +1,5 @@
-Galaga/.vs/**
-Galaga/Galaga/*.user
-Galaga/Galaga/bin/**
-Galaga/Galaga/obj**
+Galaga\.vs\**
+Galaga\Galaga\*.user
+Galaga\Galaga\bin\**
+Galaga\Galaga\obj\**
+Galaga/.vs/Galaga/v15/.suo
