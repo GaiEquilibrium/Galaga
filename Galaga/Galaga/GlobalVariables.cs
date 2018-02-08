@@ -22,7 +22,7 @@ namespace Galaga
 
             centerEnemyPosition.X = 0;
             centerEnemyPosition.Y = 3;
-            centerMove = 0.1F;
+            centerMove = 0.05F;
         }
         static public Vector2 GetWindowSize() { return windowSize; }
         static public Vector2 GetGlObjectSize() { return glObjectSize; }

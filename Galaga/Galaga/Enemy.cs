@@ -24,6 +24,7 @@ namespace Galaga
         private Vector2 centerOffset;
         private int cost;
         private bool isMoving;
+        private bool movingEnd;
 
         public Enemy(int cost, String textureName, Vector2 newCentralOffset)
         {
@@ -50,15 +51,32 @@ namespace Galaga
             if (PlayerPosition.X > position.X) velocity.X = 0.3F;
             if (PlayerPosition.X < position.X) velocity.X = -0.3F;
             isMoving = true;
+            movingEnd = false;
         }
         public void Moving(Vector2 PlayerPosition)
         {
             position += velocity;
             if (velocity.Y > -0.1) velocity.Y -= 0.02F;
-            if (PlayerPosition.X > position.X && velocity.X < 0.3) velocity.X += 0.02F;
-            if (PlayerPosition.X < position.X && velocity.X > -0.3) velocity.X -= 0.02F;
-            if (position.Y < -5) position.Y = 4;//поменять на высчитываемое значение
+            if (!movingEnd)
+            {
+                if (PlayerPosition.X > position.X && velocity.X < 0.3) velocity.X += 0.02F;
+                if (PlayerPosition.X < position.X && velocity.X > -0.3) velocity.X -= 0.02F;
+            }
+            if (position.Y < -7)
+            {
+                movingEnd = true;
+                position.Y = 10;
+            }
+            if (movingEnd) position.X = GlobalVariables.GetCenterEnemyPosition().X + centerOffset.X;
+            if (movingEnd && position.Y <= GlobalVariables.GetCenterEnemyPosition().Y + centerOffset.Y)
+            {
+                velocity.X = 0;
+                velocity.Y = 0;
+                isMoving = false;
+                movingEnd = false;
+            }
         }
+
         public bool GetIsMoving() { return isMoving; }
         public Bullet Shoot()
         {
