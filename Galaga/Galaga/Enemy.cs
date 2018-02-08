@@ -25,11 +25,11 @@ namespace Galaga
         private int cost;
         private bool isMoving;
         private bool movingEnd;
+        private static int costPerLvl = 40;
 
-        public Enemy(int cost, String textureName, Vector2 newCentralOffset)
+        public Enemy(int enemyLvl, Vector2 newCentralOffset)
         {
-            this.cost = cost;
-            SetTexture(textureName);
+            cost = enemyLvl* costPerLvl;
             centerOffset = newCentralOffset;
 
             velocity.X = 0;
@@ -41,15 +41,15 @@ namespace Galaga
         public int GetCost() { return cost; }
         public void RenderObject()
         {
-            if (velocity.X == 0) { RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset); }
-            else RenderObject(position);
+            if (velocity.X == 0) { textures.RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset, (cost / costPerLvl) - 1); }
+            else textures.RenderObject(position, (cost / costPerLvl) - 1);
         }
         public void StartMove(Vector2 PlayerPosition)//поменять на private
         {
             position = GlobalVariables.GetCenterEnemyPosition() + centerOffset;
             velocity.Y = 0.3F;
-            if (PlayerPosition.X > position.X) velocity.X = 0.3F;
-            if (PlayerPosition.X < position.X) velocity.X = -0.3F;
+            if (PlayerPosition.X > position.X) velocity.X = 0.4F;
+            if (PlayerPosition.X < position.X) velocity.X = -0.4F;
             isMoving = true;
             movingEnd = false;
         }
@@ -59,15 +59,18 @@ namespace Galaga
             if (velocity.Y > -0.1) velocity.Y -= 0.02F;
             if (!movingEnd)
             {
-                if (PlayerPosition.X > position.X && velocity.X < 0.3) velocity.X += 0.02F;
-                if (PlayerPosition.X < position.X && velocity.X > -0.3) velocity.X -= 0.02F;
+                if (PlayerPosition.X > position.X && velocity.X < 0.4) velocity.X += 0.02F;
+                if (PlayerPosition.X < position.X && velocity.X > -0.4) velocity.X -= 0.02F;
             }
             if (position.Y < -7)
             {
                 movingEnd = true;
                 position.Y = 10;
             }
-            if (movingEnd) position.X = GlobalVariables.GetCenterEnemyPosition().X + centerOffset.X;
+            if (GlobalVariables.isAllMoving) movingEnd = false;//проверить, возможно ли прикрутить сюда, 
+            //что бы в конце игры удалялись дорогие противники (можно если возвращать, к примеру bool)
+            
+            if (movingEnd ) position.X = GlobalVariables.GetCenterEnemyPosition().X + centerOffset.X;
             if (movingEnd && position.Y <= GlobalVariables.GetCenterEnemyPosition().Y + centerOffset.Y)
             {
                 velocity.X = 0;
@@ -76,7 +79,6 @@ namespace Galaga
                 movingEnd = false;
             }
         }
-
         public bool GetIsMoving() { return isMoving; }
         public Bullet Shoot()
         {

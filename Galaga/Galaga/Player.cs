@@ -24,13 +24,12 @@ namespace Galaga
         private int prevMoveDirection;
         public bool CanShoot;
 
-        public Player(String textureName)//возможно стоит юзать заранее подготовленную текстуру
+        public Player()//возможно стоит юзать заранее подготовленную текстуру
         {
             position.X = -0.5F;
             position.Y = -7;
             lifeNum = 3;
             score = 0;
-            SetTexture(textureName);
         }
         public int GetLifeNum() { return lifeNum; }
         public int GetScore() { return score; }
@@ -62,6 +61,18 @@ namespace Galaga
             position.X = -0.5F;
             if (lifeNum > 0) { position.Y = -7; }
             else { position.Y = 20; }
+        }
+        public void RenderObject() { RenderObject(textures.GetEnemyTypeNum()); }
+        public void RenderLifes()//подумать над более удобным вариантом
+        {
+            Vector2 tmpPos;
+            tmpPos.X = -10;
+            tmpPos.Y = -14;
+            for (int i = 1; i < lifeNum; i++)
+            {
+                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum());
+                tmpPos.X++;
+            }
         }
     }
 }

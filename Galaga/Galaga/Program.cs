@@ -73,20 +73,28 @@ namespace Galaga
 
             randomizer = new Random();
 
-            player = new Player("Texture/PlayerShip.png");
-            tmpEnemyOffset.X = -3;
+            player = new Player();
+            tmpEnemyOffset.X = -4;
             tmpEnemyOffset.Y = 2;
 
-            for (int i = 0; i<6; i++)
+            for (int i = 0; i<8; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    enemyList.Add(new Enemy(0, "Texture/Enemy1_1.png", tmpEnemyOffset));
+                    enemyList.Add(new Enemy(1, tmpEnemyOffset));
                     tmpEnemyOffset.Y++;
                 }
                 tmpEnemyOffset.X++;
                 tmpEnemyOffset.Y = 2;
             }
+            tmpEnemyOffset.X = -4;
+            tmpEnemyOffset.Y = 5;
+            for (int i = 0; i < 8; i++)
+            {
+                enemyList.Add(new Enemy(2, tmpEnemyOffset));
+                tmpEnemyOffset.X++;
+            }
+
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
         }
@@ -123,6 +131,7 @@ namespace Galaga
         }
         protected override void OnUpdateFrame(FrameEventArgs E)
         {
+            GlobalVariables.isAllMoving = true;
             base.OnUpdateFrame(E);
             if (isKeyPressed !=0) player.Moving();
             //на самом деле этот метод вероятно не очень правильный
@@ -184,16 +193,32 @@ namespace Galaga
                 tmpIsAll = true;
             }
 
+            //      !не перемещать ниже !
             foreach (Enemy enemy in enemyList)
-            {
-                if (enemy.GetIsMoving()) enemy.Moving(player.GetPos());
+            { 
+                if (!enemy.GetIsMoving())GlobalVariables.isAllMoving = false;
             }
 
+            float minCentralOffset = float.MaxValue;
+            float maxCentralOffset = float.MinValue;
             foreach (Enemy enemy in enemyList)
             {
+                if (enemy.GetCenterOffset().X > maxCentralOffset) maxCentralOffset = enemy.GetCenterOffset().X;
+                if (enemy.GetCenterOffset().X < minCentralOffset) minCentralOffset = enemy.GetCenterOffset().X;
+
+                if (enemy.GetIsMoving()) enemy.Moving(player.GetPos());
+
                 if (randomizer.Next(0, 1000) > 990 && !enemy.GetIsMoving() && CanMove(enemy)) enemy.StartMove(player.GetPos());
                 if (enemy.GetIsMoving() && randomizer.Next(0, 1000) > 990) bullets.Add(enemy.Shoot());
+
+                if (IsCollide(enemy.GetPos(), player.GetPos()))
+                {
+                    player.Reset();
+                    enemyList.Remove(enemy);
+                    break;
+                }
             }
+            GlobalVariables.ComputeMinMaxCenterX(minCentralOffset, maxCentralOffset);
         }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
@@ -206,11 +231,11 @@ namespace Galaga
 
             RenderBackground();
             RenderBackground();
-            player.RenderObject(player.GetPos());
+            player.RenderObject();
 
-            //for (int i = 0; i < 6; i++) enemys[i].RenderObject();
             foreach (Enemy enemy in enemyList) { enemy.RenderObject(); }
-            foreach (Bullet bullet in bullets) { bullet.RenderObject(bullet.GetPos()); }
+            foreach (Bullet bullet in bullets) { bullet.RenderObject(); }
+            player.RenderLifes();
 
             SwapBuffers();
         }
@@ -250,13 +275,20 @@ namespace Galaga
         private bool IsHit(Vector2 bulletPos, Vector2 shipPos, bool isPlayer, bool bulletOwner)
         {
             if (isPlayer == bulletOwner) return false;
-            if (((bulletPos.X + 0.6F) > shipPos.X) && ((bulletPos.X + 0.4F) < (shipPos.X + 1)) &&
-                ((bulletPos.Y + 0.9F) > shipPos.Y) && ((bulletPos.Y + 0.1F) < (shipPos.Y + 1)))
+            if (((bulletPos.X + 0.55F) > shipPos.X) && ((bulletPos.X + 0.45F) < (shipPos.X + 1)) &&
+                ((bulletPos.Y + 0.7F) > shipPos.Y) && ((bulletPos.Y + 0.3F) < (shipPos.Y + 1)))
                 return true;
 
             return false;
         }
-        private bool CanMove(Enemy enemy)
+        private bool IsCollide(Vector2 playerPos, Vector2 enemyPos)
+        {
+            if (((playerPos.X + 0.95F) > enemyPos.X + 0.05) && ((playerPos.X + 0.05F) < (enemyPos.X + 0.95)) &&
+                ((playerPos.Y + 0.95F) > enemyPos.Y + 0.05) && ((playerPos.Y + 0.05F) < (enemyPos.Y + 0.95)))
+                return true;
+            return false;
+        }
+        private bool CanMove(Enemy enemy)//поправить с учётом различной стоимости противников
         {
             if (enemy.GetCenterOffset().X >= 0)
             {

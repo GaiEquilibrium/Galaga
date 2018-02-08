@@ -18,8 +18,8 @@ namespace Galaga
             owner = newOwner;
             if (newOwner) velocity.Y = 0.8F;
             else velocity.Y = -0.8F;
-            SetTexture("Texture/Bullet.png");
         }
         public bool IsPlayerOwner() { return owner; }
+        public void RenderObject() { RenderObject(-1); }
     }
 }
