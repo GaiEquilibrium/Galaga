@@ -23,6 +23,7 @@ namespace Galaga
         Vector2 tmpEnemyOffset;
 
         List<Enemy> subFormations = new List<Enemy>();
+        List<Blast> blastList = new List<Blast>();
         Random randomizer;
         int isKeyPressed = 0;
         #endregion
@@ -169,6 +170,7 @@ namespace Galaga
                         {
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
+                            blastList.Add(new Blast(GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset(), false));
                             tmpIsHit = true;
                             break;
                         }
@@ -176,12 +178,14 @@ namespace Galaga
                         {
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
+                            blastList.Add(new Blast(enemy.GetPos(), false));
                             tmpIsHit = true;
                             break;
                         }
                     }
                     if (IsHit(bullet.GetPos(), player.GetPos(), true, bullet.IsPlayerOwner()))
                     {
+                        blastList.Add(new Blast(player.GetPos(), true));//не менять положение
                         player.Reset();
                         bullets.Remove(bullet);
                         tmpIsHit = true;
@@ -265,8 +269,10 @@ namespace Galaga
 
                 if (IsCollide(enemy.GetPos(), player.GetPos()))
                 {
+                    blastList.Add(new Blast(player.GetPos(), true));//не перемещать
                     player.Reset();
                     enemyList.Remove(enemy);
+                    blastList.Add(new Blast(enemy.GetPos(), false));
                     break;
                 }
             }
@@ -276,7 +282,7 @@ namespace Galaga
         {
             base.OnRenderFrame(E);
 
-//            GL.ClearColor(Color4.Black);
+            //            GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Begin(BeginMode.Quads);
@@ -287,6 +293,16 @@ namespace Galaga
 
             foreach (Enemy enemy in enemyList) { enemy.RenderObject(); }
             foreach (Bullet bullet in bullets) { bullet.RenderObject(); }
+            bool tmpIsAll = false;
+            while (!tmpIsAll)
+            {
+                foreach (Blast blast in blastList)
+                {
+                    if (blast.RenderBlast()) blastList.Remove(blast);
+                    break;
+                }
+                tmpIsAll = true;
+            }
             player.RenderLifes();
 
             SwapBuffers();
