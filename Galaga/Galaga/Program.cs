@@ -22,6 +22,7 @@ namespace Galaga
         List<Bullet> bullets = new List<Bullet>();
         Vector2 tmpEnemyOffset;
 
+        List<Enemy> subFormations = new List<Enemy>();
         Random randomizer;
         int isKeyPressed = 0;
         #endregion
@@ -94,6 +95,20 @@ namespace Galaga
                 enemyList.Add(new Enemy(2, tmpEnemyOffset));
                 tmpEnemyOffset.X++;
             }
+            tmpEnemyOffset.X = -3;
+            tmpEnemyOffset.Y = 6;
+            for (int i = 0; i < 6; i++)
+            {
+                enemyList.Add(new Enemy(3, tmpEnemyOffset));
+                tmpEnemyOffset.X++;
+            }
+            tmpEnemyOffset.X = -2;
+            tmpEnemyOffset.Y = 7;
+            for (int i = 0; i < 2; i++)
+            {
+                enemyList.Add(new Enemy(4, tmpEnemyOffset));
+                tmpEnemyOffset.X+=3;
+            }
 
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
@@ -141,7 +156,7 @@ namespace Galaga
 
             foreach (Bullet bullet in bullets) { bullet.Moving(); }
 
-            //немного хитра проверка попадания, надо будет проверить, не ли варианта лучше
+            //немного хитрая проверка попадания, надо будет проверить, не ли варианта лучше
             bool tmpIsHit = false;
             bool tmpIsAll = false;
             while (!tmpIsAll)
@@ -195,8 +210,42 @@ namespace Galaga
 
             //      !не перемещать ниже !
             foreach (Enemy enemy in enemyList)
-            { 
-                if (!enemy.GetIsMoving())GlobalVariables.isAllMoving = false;
+            {
+                bool isEqualSubFormation = false;
+                if (!enemy.GetIsMoving()) GlobalVariables.isAllMoving = false;//      !!!
+
+                if (enemy.GetIsMoving() && enemy.GetSubFormation() != 0)
+                {
+                    foreach (Enemy enemyBuf in subFormations)
+                    {
+                        if (enemyBuf.GetSubFormation() == enemy.GetSubFormation())
+                        {
+                            isEqualSubFormation = true;
+                            if (enemy.GetCost() > enemyBuf.GetCost())
+                            {
+                                subFormations.Remove(enemyBuf);
+                                subFormations.Add(enemy);
+                                break;
+                            }
+                        }
+                    }
+                    if (!isEqualSubFormation)
+                    {
+                        subFormations.Add(enemy);
+                        isEqualSubFormation = false;
+                    }
+                }
+            }
+            foreach (Enemy enemy in enemyList)
+            {
+                if (enemy.GetSubFormation() != 0)
+                {
+                    foreach (Enemy enemyBuf in subFormations)
+                    {
+                        if (enemyBuf.GetSubFormation() == enemy.GetSubFormation())
+                            enemy.SetVel(enemyBuf.GetVel());
+                    }
+                }
             }
 
             float minCentralOffset = float.MaxValue;
@@ -208,7 +257,10 @@ namespace Galaga
 
                 if (enemy.GetIsMoving()) enemy.Moving(player.GetPos());
 
-                if (randomizer.Next(0, 1000) > 990 && !enemy.GetIsMoving() && CanMove(enemy)) enemy.StartMove(player.GetPos());
+                int startChance;
+                if (enemyList.Count > 8) startChance = 996;
+                else startChance = 993;
+                if (randomizer.Next(0, 1000) > startChance && !enemy.GetIsMoving() && CanMove(enemy)) enemy.StartMove();//(player.GetPos());
                 if (enemy.GetIsMoving() && randomizer.Next(0, 1000) > 990) bullets.Add(enemy.Shoot());
 
                 if (IsCollide(enemy.GetPos(), player.GetPos()))
@@ -290,24 +342,72 @@ namespace Galaga
         }
         private bool CanMove(Enemy enemy)//поправить с учётом различной стоимости противников
         {
-            if (enemy.GetCenterOffset().X >= 0)
+            if (enemy.GetCost() < (enemy.GetCostPeLvl() * 3))
             {
+                if (enemy.GetCenterOffset().X >= 0)
+                {
+                    foreach (Enemy enemyBuf in enemyList)
+                    {
+                        if (enemyBuf.GetCenterOffset().X > enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCost() < (enemy.GetCostPeLvl() * 3)) return false;
+                        if (enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && enemyBuf.GetCenterOffset().X == enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCost() < (enemy.GetCostPeLvl() * 3)) return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    foreach (Enemy enemyBuf in enemyList)
+                    {
+                        if (enemyBuf.GetCenterOffset().X < enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCost() < (enemy.GetCostPeLvl() * 3)) return false;
+                        if (enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && enemyBuf.GetCenterOffset().X == enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCost() < (enemy.GetCostPeLvl() * 3)) return false;
+                    }
+                    return true;
+                }
+            }
+            else if (enemy.GetCost() == (enemy.GetCostPeLvl() * 3))
+            {
+                //проврить, если сверху и по диагоналям 4-го уровня
                 foreach (Enemy enemyBuf in enemyList)
                 {
-                    if (enemyBuf.GetCenterOffset().X > enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
-                    if (enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && enemyBuf.GetCenterOffset().X == enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
+                    if (!enemyBuf.GetIsMoving() && enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && 
+                        enemyBuf.GetCenterOffset().X >= (enemy.GetCenterOffset().X - 1) && 
+                        enemyBuf.GetCenterOffset().X <= (enemy.GetCenterOffset().X + 1))
+                        return false;
+                    if (enemy.GetCenterOffset().X >= 0)
+                    { if (enemyBuf.GetCenterOffset().X > enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCenterOffset().Y == enemy.GetCenterOffset().Y) return false; }
+                    else if (enemyBuf.GetCenterOffset().X < enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCenterOffset().Y == enemy.GetCenterOffset().Y) return false;
                 }
                 return true;
             }
-            else
+            else if (enemy.GetCost() == (enemy.GetCostPeLvl() * 4))
             {
+                //проверить, возможно ли потянуть за собой 2-х 3-го уровня
+                int num = 0;
+                int tmpSubFormation = GlobalVariables.GetSubFormation();
                 foreach (Enemy enemyBuf in enemyList)
                 {
-                    if (enemyBuf.GetCenterOffset().X < enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
-                    if (enemyBuf.GetCenterOffset().Y > enemy.GetCenterOffset().Y && enemyBuf.GetCenterOffset().X == enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving()) return false;
+                    if (enemy.GetCenterOffset().X >= 0)
+                    { if (enemyBuf.GetCenterOffset().X > enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCenterOffset().Y == enemy.GetCenterOffset().Y) return false; }
+                    else if (enemyBuf.GetCenterOffset().X < enemy.GetCenterOffset().X && !enemyBuf.GetIsMoving() && enemyBuf.GetCenterOffset().Y == enemy.GetCenterOffset().Y) return false;
                 }
-                return true;
+
+                foreach (Enemy enemyBuf in enemyList)
+                {
+                    if (!enemyBuf.GetIsMoving() && enemyBuf.GetCenterOffset().Y == enemy.GetCenterOffset().Y - 1 &&
+                        enemyBuf.GetCenterOffset().X >= (enemy.GetCenterOffset().X - 1) &&
+                        enemyBuf.GetCenterOffset().X <= (enemy.GetCenterOffset().X + 1))
+                    {
+                        if (enemy.GetCenterOffset().X < 0) enemyBuf.StartMove(-tmpSubFormation);
+                        else enemyBuf.StartMove(tmpSubFormation);
+                        num++;
+                    }
+                    if (num == 2) break;
+                }
+                //если дошло до этого момента, то значит предыдущие остальные проверки успешно пройдены
+                if (enemy.GetCenterOffset().X < 0) enemy.StartMove(-tmpSubFormation);
+                else enemy.StartMove(tmpSubFormation);
+                return false;
             }
+            else return true;//true;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Galaga
         private static Vector2 minMaxCenterX;
         private static Vector2 formationSize;//для генерации
         public static bool isAllMoving;
+        private static int subFormation;
 
         static GlobalVariables()
         {
@@ -32,6 +33,7 @@ namespace Galaga
             centerEnemyPosition.X = 0;
             centerEnemyPosition.Y = 3;
             centerMove = 0.05F;
+            subFormation = 0;
         }
         static public Vector2 GetWindowSize() { return windowSize; }
         static public Vector2 GetGlObjectSize() { return glObjectSize; }
@@ -49,6 +51,12 @@ namespace Galaga
             if (centerEnemyPosition.X < minMaxCenterX.X) centerMove = 0.05F;
 
             centerEnemyPosition.X += centerMove;
+        }
+        static public int GetSubFormation()
+        {
+            subFormation++;
+            if (subFormation == int.MaxValue) subFormation = 1;
+            return subFormation;
         }
     }
 }

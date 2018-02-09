@@ -26,6 +26,7 @@ namespace Galaga
         private bool isMoving;
         private bool movingEnd;
         private static int costPerLvl = 40;
+        private int subFormation;
 
         public Enemy(int enemyLvl, Vector2 newCentralOffset)
         {
@@ -44,12 +45,22 @@ namespace Galaga
             if (velocity.X == 0) { textures.RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset, (cost / costPerLvl) - 1); }
             else textures.RenderObject(position, (cost / costPerLvl) - 1);
         }
-        public void StartMove(Vector2 PlayerPosition)//поменять на private
+        public void StartMove()
         {
             position = GlobalVariables.GetCenterEnemyPosition() + centerOffset;
             velocity.Y = 0.3F;
-            if (PlayerPosition.X > position.X) velocity.X = 0.4F;
-            if (PlayerPosition.X < position.X) velocity.X = -0.4F;
+            if (centerOffset.X > 0) velocity.X = 0.4F;
+            if (centerOffset.X < 0) velocity.X = -0.4F;
+            isMoving = true;
+            movingEnd = false;
+        }
+        public void StartMove(int newSubFormation)
+        {
+            position = GlobalVariables.GetCenterEnemyPosition() + centerOffset;
+            velocity.Y = 0.3F;
+            if (newSubFormation > 0) velocity.X = 0.4F;
+            if (newSubFormation < 0) velocity.X = -0.4F;
+            subFormation = newSubFormation;
             isMoving = true;
             movingEnd = false;
         }
@@ -65,6 +76,7 @@ namespace Galaga
             if (position.Y < -7)
             {
                 movingEnd = true;
+                subFormation = 0;
                 position.Y = 10;
             }
             if (GlobalVariables.isAllMoving) movingEnd = false;//проверить, возможно ли прикрутить сюда, 
@@ -80,11 +92,13 @@ namespace Galaga
             }
         }
         public bool GetIsMoving() { return isMoving; }
+        public int GetCostPeLvl() { return costPerLvl; }
         public Bullet Shoot()
         {
             Vector2 tmpPos = position;
             tmpPos.Y--;
             return new Bullet(tmpPos, false);
         }
+        public int GetSubFormation() { return subFormation; }
     }
 }
