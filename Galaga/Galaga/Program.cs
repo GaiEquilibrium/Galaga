@@ -24,6 +24,7 @@ namespace Galaga
 
         List<Enemy> subFormations = new List<Enemy>();
         List<Blast> blastList = new List<Blast>();
+        List<Star> starList = new List<Star>();
         Random randomizer;
         int isKeyPressed = 0;
         #endregion
@@ -75,10 +76,18 @@ namespace Galaga
 
             randomizer = new Random();
 
+            for (int i = 0; i < 30; i++)
+            {
+                tmpEnemyOffset.X = (float)(randomizer.NextDouble() - 0.5) * 25;
+                tmpEnemyOffset.Y = (float)(randomizer.NextDouble() - 0.5) * 11;
+                Star tmpStar = new Star((float)randomizer.NextDouble()/3, tmpEnemyOffset, randomizer.Next(0, 99));
+                starList.Add(tmpStar);
+            }
+
             player = new Player();
+
             tmpEnemyOffset.X = -4;
             tmpEnemyOffset.Y = 2;
-
             for (int i = 0; i<8; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -110,7 +119,6 @@ namespace Galaga
                 enemyList.Add(new Enemy(4, tmpEnemyOffset));
                 tmpEnemyOffset.X+=3;
             }
-
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
         }
@@ -277,6 +285,11 @@ namespace Galaga
                 }
             }
             GlobalVariables.ComputeMinMaxCenterX(minCentralOffset, maxCentralOffset);
+
+            foreach (Star star in starList)
+            {
+                star.Moving();
+            }
         }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
@@ -339,6 +352,10 @@ namespace Galaga
             GL.Vertex2(-1, 1);
 
             GL.End();
+            foreach (Star star in starList)
+            {
+                star.RenderStar();
+            }
         }
         private bool IsHit(Vector2 bulletPos, Vector2 shipPos, bool isPlayer, bool bulletOwner)
         {
