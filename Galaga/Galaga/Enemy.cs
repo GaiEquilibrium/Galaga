@@ -42,8 +42,14 @@ namespace Galaga
         public int GetCost() { return cost; }
         public void RenderObject()
         {
-            if (velocity.X == 0) { textures.RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset, (cost / costPerLvl) - 1); }
-            else textures.RenderObject(position, (cost / costPerLvl) - 1);
+            if (movingEnd)
+            {
+                Vector2 tmpVelocity = velocity;
+                tmpVelocity.X = 0;
+                textures.RenderObject(position, (cost / costPerLvl) - 1, tmpVelocity);
+            }
+            else if (velocity.X == 0 && velocity.Y == 0) { textures.RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset, (cost / costPerLvl) - 1,velocity); }
+            else textures.RenderObject(position, (cost / costPerLvl) - 1,velocity);
         }
         public void StartMove()
         {
@@ -77,7 +83,8 @@ namespace Galaga
             {
                 movingEnd = true;
                 subFormation = 0;
-                position.Y = 10;
+                position.Y = 11;
+//                velocity.X = 0;
             }
             if (GlobalVariables.isAllMoving) movingEnd = false;//проверить, возможно ли прикрутить сюда, 
             //что бы в конце игры удалялись дорогие противники (можно если возвращать, к примеру bool)

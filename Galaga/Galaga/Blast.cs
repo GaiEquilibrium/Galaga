@@ -39,16 +39,24 @@ namespace Galaga
             else if (!isPlayer && stage < enemyStage* frameToStage) enemyTexture[stage/ frameToStage].Bind();
             else return true;
 
+            GL.PushMatrix();
+            GL.Translate((position.X+0.5) * GlobalVariables.GetGlObjectSize().X, (position.Y + 0.5) * GlobalVariables.GetGlObjectSize().Y, 0);//хммм
+
             GL.Begin(BeginMode.Quads);
             GL.TexCoord2(1, 1);
-            GL.Vertex2(position.X * GlobalVariables.GetGlObjectSize().X, position.Y * GlobalVariables.GetGlObjectSize().Y);
+            GL.Vertex2(-GlobalVariables.GetGlObjectSize().X / 2, -GlobalVariables.GetGlObjectSize().Y / 2);
+
             GL.TexCoord2(0, 1);
-            GL.Vertex2((position.X + 1) * GlobalVariables.GetGlObjectSize().X, position.Y * GlobalVariables.GetGlObjectSize().Y);
+            GL.Vertex2(GlobalVariables.GetGlObjectSize().X / 2, -GlobalVariables.GetGlObjectSize().Y / 2);
+
             GL.TexCoord2(0, 0);
-            GL.Vertex2((position.X + 1) * GlobalVariables.GetGlObjectSize().X, (position.Y + 1) * GlobalVariables.GetGlObjectSize().Y);
+            GL.Vertex2(GlobalVariables.GetGlObjectSize().X / 2, GlobalVariables.GetGlObjectSize().Y / 2);
+
             GL.TexCoord2(1, 0);
-            GL.Vertex2(position.X * GlobalVariables.GetGlObjectSize().X, (position.Y + 1) * GlobalVariables.GetGlObjectSize().Y);
+            GL.Vertex2(-GlobalVariables.GetGlObjectSize().X / 2, GlobalVariables.GetGlObjectSize().Y / 2);
+
             GL.End();
+            GL.PopMatrix();
 
             stage++;
             return false;
