@@ -27,8 +27,11 @@ namespace Galaga
         private bool movingEnd;
         private static int costPerLvl = 40;
         private int subFormation;
+        private int stage;
+        public const int maxStage = 4;
+        public const int frameToStage = 20;
 
-        public Enemy(int enemyLvl, Vector2 newCentralOffset)
+        public Enemy(int enemyLvl, Vector2 newCentralOffset, int startStage)
         {
             cost = enemyLvl* costPerLvl;
             centerOffset = newCentralOffset;
@@ -37,19 +40,23 @@ namespace Galaga
             velocity.Y = 0;
 
             isMoving = false;
+
+            stage = startStage;
         }
         public Vector2 GetCenterOffset() { return centerOffset; }
         public int GetCost() { return cost; }
         public void RenderObject()
         {
+            stage++;
+            if (stage >= frameToStage * maxStage) stage = 0;
             if (movingEnd)
             {
                 Vector2 tmpVelocity = velocity;
                 tmpVelocity.X = 0;
-                textures.RenderObject(position, (cost / costPerLvl) - 1, tmpVelocity);
+                textures.RenderObject(position, (cost / costPerLvl) - 1, tmpVelocity, stage/frameToStage);
             }
-            else if (velocity.X == 0 && velocity.Y == 0) { textures.RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset, (cost / costPerLvl) - 1,velocity); }
-            else textures.RenderObject(position, (cost / costPerLvl) - 1,velocity);
+            else if (velocity.X == 0 && velocity.Y == 0) { textures.RenderObject(GlobalVariables.GetCenterEnemyPosition() + centerOffset, (cost / costPerLvl) - 1,velocity, stage / frameToStage); }
+            else textures.RenderObject(position, (cost / costPerLvl) - 1,velocity, stage / frameToStage);
         }
         public void StartMove()
         {

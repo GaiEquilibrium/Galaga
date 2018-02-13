@@ -18,6 +18,6 @@ namespace Galaga
         public Vector2 GetVel() { return velocity; }
         public void SetVel(Vector2 vel) { velocity = vel; } //  !!!проверить, есть ли способ обойтись без этого!!!
         public void Moving() { position += velocity; }
-        public void RenderObject(int obj) { textures.RenderObject(position,obj,velocity); }
+        public void RenderObject(int obj) { textures.RenderObject(position,obj,velocity,0); }
     }
 }

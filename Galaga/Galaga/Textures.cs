@@ -10,24 +10,27 @@ namespace Galaga
     {
         private static int enemyTypeNum = 4;
         private static Texture playerTexture;
-        private static Texture[] enemyTexture = new Texture[enemyTypeNum];
+        private static Texture[,] enemyTexture = new Texture[enemyTypeNum, Enemy.maxStage];
         private static Texture bulletTexture;
 
         public Textures()
         {
-            playerTexture = new Texture(new Bitmap("Texture/PlayerShip.png"));
+            playerTexture = new Texture(new Bitmap("Texture/1/PlayerShip.png"));
             for (int i = 0; i < enemyTypeNum; i++)
             {
-                enemyTexture[i] = new Texture(new Bitmap("Texture/Enemy1_" + i + ".png"));
+                for (int j = 0; j < 4; j++)
+                {
+                    enemyTexture[i, j] = new Texture(new Bitmap("Texture/1/Enemy" + i.ToString() + j.ToString() + ".png"));
+                }
             }
             bulletTexture = new Texture(new Bitmap("Texture/Bullet.png"));
         }
 
-        public void RenderObject(Vector2 Coords, int obj, Vector2 velocity)   //0 -- (enemyTypeNum-1) - enemy, enemyTypeNum - player, -1 bullet
+        public void RenderObject(Vector2 Coords, int obj, Vector2 velocity, int stage)   //0 -- (enemyTypeNum-1) - enemy, enemyTypeNum - player, -1 bullet
         {
             //заменить if на swich-case
             if (obj == enemyTypeNum) playerTexture.Bind();
-            else if (obj >= 0 && obj < enemyTypeNum) enemyTexture[obj].Bind();
+            else if (obj >= 0 && obj < enemyTypeNum) enemyTexture[obj, stage].Bind();
             else if (obj == -1) bulletTexture.Bind();
             else return;
 

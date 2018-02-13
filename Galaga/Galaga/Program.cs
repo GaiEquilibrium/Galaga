@@ -109,7 +109,7 @@ namespace Galaga
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    enemyList.Add(new Enemy(1, tmpEnemyOffset));
+                    enemyList.Add(new Enemy(1, tmpEnemyOffset,(i%Enemy.maxStage)*Enemy.frameToStage));
                     tmpEnemyOffset.Y++;
                 }
                 tmpEnemyOffset.X++;
@@ -119,21 +119,21 @@ namespace Galaga
             tmpEnemyOffset.Y = 5;
             for (int i = 0; i < 8; i++)
             {
-                enemyList.Add(new Enemy(2, tmpEnemyOffset));
+                enemyList.Add(new Enemy(2, tmpEnemyOffset, (i % Enemy.maxStage) * Enemy.frameToStage));
                 tmpEnemyOffset.X++;
             }
             tmpEnemyOffset.X = -3;
             tmpEnemyOffset.Y = 6;
             for (int i = 0; i < 6; i++)
             {
-                enemyList.Add(new Enemy(3, tmpEnemyOffset));
+                enemyList.Add(new Enemy(3, tmpEnemyOffset, (i % Enemy.maxStage) * Enemy.frameToStage));
                 tmpEnemyOffset.X++;
             }
             tmpEnemyOffset.X = -2;
             tmpEnemyOffset.Y = 7;
             for (int i = 0; i < 2; i++)
             {
-                enemyList.Add(new Enemy(4, tmpEnemyOffset));
+                enemyList.Add(new Enemy(4, tmpEnemyOffset, (i % Enemy.maxStage) * Enemy.frameToStage));
                 tmpEnemyOffset.X+=3;
             }
 

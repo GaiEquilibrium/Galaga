@@ -70,7 +70,7 @@ namespace Galaga
             tmpPos.Y = -14;
             for (int i = 1; i < lifeNum; i++)
             {
-                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum(),velocity);
+                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum(),velocity,0);
                 tmpPos.X++;
             }
         }
