@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System;
@@ -29,7 +30,8 @@ namespace Galaga
             else if (obj >= 0 && obj < enemyTypeNum) enemyTexture[obj].Bind();
             else if (obj == -1) bulletTexture.Bind();
             else return;
-            //            GL.Color4(Color4.White);
+
+            GL.Color4(Color4.White);
 
             float angle = 0;
             if (velocity.X == 0 && velocity.Y == 0) { angle = 0; }

@@ -9,7 +9,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System.Drawing;
-
+using System.Drawing.Text;
 
 namespace Galaga
 {
@@ -27,6 +27,9 @@ namespace Galaga
         List<Star> starList = new List<Star>();
         Random randomizer;
         int isKeyPressed = 0;
+
+        TextRenderer scoreLabel;// = new TextRenderer(GraphicsContext.CurrentContext);
+        TextRenderer score;// = new TextRenderer(GraphicsContext.CurrentContext);
         #endregion
         static void Main()
         {
@@ -74,7 +77,21 @@ namespace Galaga
 
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
+            #region forDebug
+            // debug part / отладочная часть 
+//            GL.Viewport(0, 0, (int)GlobalVariables.GetWindowSize().X, (int)GlobalVariables.GetWindowSize().Y);
+//            GL.MatrixMode(MatrixMode.Projection);
+//            GL.LoadIdentity();
+//            GL.Frustum(-1, 1, -1, 1, 1.5, 20);
+//            GL.MatrixMode(MatrixMode.Modelview);
+//            
+//            GL.Translate(0, 0, -3);
+            #endregion
+
             randomizer = new Random();
+
+            scoreLabel = new TextRenderer(GraphicsContext.CurrentContext);
+            score = new TextRenderer(GraphicsContext.CurrentContext);
 
             for (int i = 0; i < 30; i++)
             {
@@ -121,6 +138,9 @@ namespace Galaga
             }
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
+
+            scoreLabel.PrepareToRender("Score");
+            score.PrepareToRender("0");
         }
         protected override void OnResize(EventArgs E)
         {
@@ -176,6 +196,7 @@ namespace Galaga
                     {
                         if (!enemy.GetIsMoving() && IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset()), false, bullet.IsPlayerOwner()))
                         {
+                            player.AddToScore(enemy.GetCost());
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
                             blastList.Add(new Blast(GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset(), false));
@@ -184,6 +205,7 @@ namespace Galaga
                         }
                         if (enemy.GetIsMoving() && IsHit(bullet.GetPos(), enemy.GetPos(), false, bullet.IsPlayerOwner()))
                         {
+                            player.AddToScore(enemy.GetCost());
                             enemyList.Remove(enemy);
                             bullets.Remove(bullet);
                             blastList.Add(new Blast(enemy.GetPos(), false));
@@ -277,6 +299,7 @@ namespace Galaga
 
                 if (IsCollide(enemy.GetPos(), player.GetPos()))
                 {
+                    player.AddToScore(enemy.GetCost());
                     blastList.Add(new Blast(player.GetPos(), true));//не перемещать
                     player.Reset();
                     enemyList.Remove(enemy);
@@ -290,6 +313,7 @@ namespace Galaga
             {
                 star.Moving();
             }
+            score.PrepareToRender(player.GetScore().ToString());
         }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
@@ -302,6 +326,14 @@ namespace Galaga
 
             RenderBackground();
             RenderBackground();
+
+            GL.PushMatrix();
+            GL.Translate(-1 + scoreLabel.Size.X / GlobalVariables.GetWindowSize().X, 1 - scoreLabel.Size.Y/ GlobalVariables.GetWindowSize().Y, 0);
+            scoreLabel.Render();
+            GL.Translate(scoreLabel.Size.X/GlobalVariables.GetWindowSize().X + score.Size.X/GlobalVariables.GetWindowSize().X, 0, 0);
+            score.Render();
+            GL.PopMatrix();
+
             player.RenderObject();
 
             foreach (Enemy enemy in enemyList) { enemy.RenderObject(); }
@@ -317,6 +349,8 @@ namespace Galaga
                 tmpIsAll = true;
             }
             player.RenderLifes();
+
+
 
             SwapBuffers();
         }
