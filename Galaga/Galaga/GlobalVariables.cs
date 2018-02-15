@@ -30,8 +30,7 @@ namespace Galaga
             glObjectSize.X = (objectSize * 2) / windowSize.X;
             glObjectSize.Y = (objectSize * 2) / windowSize.Y;
 
-            centerEnemyPosition.X = 0;
-            centerEnemyPosition.Y = 3;
+            ResetCenterEnemyPosition();
             centerMove = 0.05F;
             subFormation = 0;
         }
@@ -57,6 +56,11 @@ namespace Galaga
             subFormation++;
             if (subFormation == int.MaxValue) subFormation = 1;
             return subFormation;
+        }
+        static public void ResetCenterEnemyPosition()
+        {
+            centerEnemyPosition.X = 0;
+            centerEnemyPosition.Y = 3;
         }
     }
 }

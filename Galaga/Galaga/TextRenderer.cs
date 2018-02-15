@@ -22,7 +22,7 @@ namespace Galaga
         private int needWidth = 300, needHeight = 100;
         private string text;
 
-        public TextRenderer(IGraphicsContext mainContext)//, OpenTK.Platform.IWindowInfo mainWindow)
+        public TextRenderer()
         {
 //            mainContext.MakeCurrent(mainWindow);
 
