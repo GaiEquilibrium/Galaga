@@ -163,7 +163,7 @@ namespace Galaga
             text = newText;
             CheckReset();
             Clear(Color.Black);
-            DrawString(Brushes.Red, position);
+            DrawString(Brushes.White, position);
         }
         public void Render()
         {

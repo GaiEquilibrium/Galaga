@@ -13,6 +13,7 @@ namespace Galaga
         private static Vector2 formationSize;//для генерации
         public static bool isAllMoving;
         private static int subFormation;
+        private static int shootFlag;
 
         static GlobalVariables()
         {
@@ -33,6 +34,8 @@ namespace Galaga
             ResetCenterEnemyPosition();
             centerMove = 0.05F;
             subFormation = 0;
+
+            shootFlag = 0;
         }
         static public Vector2 GetWindowSize() { return windowSize; }
         static public Vector2 GetGlObjectSize() { return glObjectSize; }
@@ -61,6 +64,25 @@ namespace Galaga
         {
             centerEnemyPosition.X = 0;
             centerEnemyPosition.Y = 3;
+        }
+        static public int ShootFlag
+        {
+            get
+            {
+                return shootFlag;
+            }
+        }
+        static public void ShootFlagInc()
+        {
+            shootFlag++;
+        }
+        static public void ShootFlagDec()
+        {
+            shootFlag--;
+        }
+        static public void ShootFlagNeg()
+        {
+            shootFlag = -1;
         }
     }
 }

@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+
 
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System.Drawing;
-using System.Drawing.Text;
+using OpenTK.Audio;
+using OpenTK.Audio.OpenAL;
 
 namespace Galaga
 {
@@ -42,10 +45,14 @@ namespace Galaga
         List<Blast> blastList = new List<Blast>();
         List<Star> starList = new List<Star>();
         Random randomizer;
-        int isKeyPressed = 0;
+//        int isKeyPressed = 0;
+        bool isMovingRight = false;
+        bool isMovingLeft = false;
 
         TextRenderer scoreLabel;
         TextRenderer score;
+
+        SoundMaster soundMaster;
         #endregion
         static void Main()
         {
@@ -97,13 +104,15 @@ namespace Galaga
             {
                 if (Key.Left == E.Key)
                 {
-                    isKeyPressed++;
-                    player.Moving(-1);
+                    if (!isMovingLeft) player.Moving(-1);
+                    isMovingRight = false;
+                    isMovingLeft = true;
                 }
                 if (Key.Right == E.Key)
                 {
-                    isKeyPressed++;
-                    player.Moving(1);
+                    if (!isMovingRight) player.Moving(1);
+                    isMovingLeft = false;
+                    isMovingRight = true;
                 }
                 if (Key.Space == E.Key)
                 {
@@ -184,9 +193,16 @@ namespace Galaga
         }
         protected void OnKeyUp(object Sender, KeyboardKeyEventArgs E)
         {
-            if (Key.Left == E.Key || Key.Right == E.Key)
+            if (state == 3)
             {
-                isKeyPressed --;
+                if (Key.Left == E.Key)
+                {
+                    isMovingLeft = false;
+                }
+                if (Key.Right == E.Key)
+                {
+                    isMovingRight = false;
+                }
             }
         }
         protected override void OnLoad(EventArgs E)
@@ -203,6 +219,10 @@ namespace Galaga
 
             backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
             menuFrame = new Texture(new Bitmap("Texture/menu_frame.png"));
+
+            soundMaster = new SoundMaster();
+            Thread soundMasterThread = new Thread(soundMaster.SoundPlay);
+            soundMasterThread.Start();
             #region forDebug
             // debug part / отладочная часть 
             //            GL.Viewport(0, 0, (int)GlobalVariables.GetWindowSize().X, (int)GlobalVariables.GetWindowSize().Y);
@@ -258,9 +278,10 @@ namespace Galaga
             if (state == 3)
             {
                 GlobalVariables.isAllMoving = true;
-                if (isKeyPressed != 0) player.Moving();
+                //if (isKeyPressed != 0) player.Moving();
                 //на самом деле этот метод вероятно не очень правильный
                 //ибо в таком варианте оно позволяет перемещать игрока в противоположном направленному направлении
+                if (isMovingLeft || isMovingRight) player.Moving();
 
                 GlobalVariables.MoveCenterEnemyPosition();
 
@@ -398,7 +419,11 @@ namespace Galaga
                 }
                 score.PrepareToRender(player.GetScore().ToString());
             }
-            if (state == 6) Exit();
+            if (state == 6)
+            {
+                GlobalVariables.ShootFlagNeg();
+                Exit();
+            }
         }
         protected override void OnRenderFrame(FrameEventArgs E)
         {
@@ -471,7 +496,9 @@ namespace Galaga
             {
                 GL.PushMatrix();
 
-                isKeyPressed = 0;
+                //isKeyPressed = 0;
+                isMovingLeft = false;
+                isMovingRight = false;
 
                 GL.Translate(0, 0.5, 0);
                 generalText.PrepareToRender("GAME OVER");
@@ -504,7 +531,9 @@ namespace Galaga
             {
                 GL.PushMatrix();
 
-                isKeyPressed = 0;
+                //isKeyPressed = 0;
+                isMovingLeft = false;
+                isMovingRight = false;
 
                 GL.Translate(0, 0.5, 0);
                 generalText.PrepareToRender("PAUSE");
@@ -537,7 +566,9 @@ namespace Galaga
             {
                 GL.PushMatrix();
 
-                isKeyPressed = 0;
+                //isKeyPressed = 0;
+                isMovingLeft = false;
+                isMovingRight = false;
 
                 GL.Translate(0, 0.5, 0);
                 generalText.PrepareToRender("Settings");
@@ -669,7 +700,9 @@ namespace Galaga
             subFormations.Clear();
             blastList.Clear();
             starList.Clear();
-            isKeyPressed = 0;
+            //isKeyPressed = 0;
+            isMovingLeft = false;
+            isMovingRight = false;
             GlobalVariables.ResetCenterEnemyPosition();
 
             randomizer = new Random();
@@ -723,6 +756,8 @@ namespace Galaga
 
             scoreLabel.PrepareToRender("Score");
             score.PrepareToRender("0");
+
+//            Thread.Sleep(200);
         }
         private void MenuFrameRender(float x, float y)
         {

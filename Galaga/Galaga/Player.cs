@@ -21,7 +21,6 @@ namespace Galaga
     {
         private int lifeNum;
         private int score;
-        private int prevMoveDirection;
         public bool CanShoot;
 
         public Player()//возможно стоит юзать заранее подготовленную текстуру
@@ -37,20 +36,12 @@ namespace Galaga
         public void AddToScore(int addedScore) { score += addedScore; }
         public void Moving(int direction)
         {
-            if (direction > 0)
-            {
-                position.X += 0.15F;   //вправо
-                prevMoveDirection = 1;
-            }
-            if (direction < 0)
-            {
-                position.X -= 0.15F;   //влево
-                prevMoveDirection = -1;
-            }
+            if (direction > 0) { velocity.X = 0.15F; }
+            if (direction < 0) { velocity.X = -0.15F; }
         }
-        public new void Moving() { Moving(prevMoveDirection); }
         public Bullet Shoot()
         {
+            GlobalVariables.ShootFlagInc();
             Vector2 tmpPos = position;
             tmpPos.Y++;
             return new Bullet(tmpPos,true);

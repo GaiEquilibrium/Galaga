@@ -109,6 +109,7 @@ namespace Galaga
         public int GetCostPeLvl() { return costPerLvl; }
         public Bullet Shoot()
         {
+            GlobalVariables.ShootFlagInc();
             Vector2 tmpPos = position;
             tmpPos.Y--;
             return new Bullet(tmpPos, false);

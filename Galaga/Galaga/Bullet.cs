@@ -12,6 +12,7 @@ namespace Galaga
     class Bullet : Moved
     {
         private bool owner; //true - player, false - enemy
+
         public Bullet(Vector2 startPosition, bool newOwner)
         {
             position = startPosition;
@@ -20,6 +21,9 @@ namespace Galaga
             else velocity.Y = -0.8F;
         }
         public bool IsPlayerOwner() { return owner; }
-        public void RenderObject() { RenderObject(-1); }
+        public void RenderObject()
+        {
+            RenderObject(-1);
+        }
     }
 }
