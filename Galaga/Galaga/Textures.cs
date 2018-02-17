@@ -37,7 +37,7 @@ namespace Galaga
             GL.Color4(Color4.White);
 
             float angle = 0;
-            if (velocity.X == 0 && velocity.Y == 0) { angle = 0; }
+            if (velocity.X == 0 && velocity.Y == 0 || obj == enemyTypeNum) { angle = 0; }
             else
             {
                 float tmpVelocityY = velocity.Y / (float)(Math.Sqrt(velocity.X * velocity.X + velocity.Y * velocity.Y));
