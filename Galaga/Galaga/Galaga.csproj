@@ -66,8 +66,8 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="GameField.cs" />
     <Compile Include="GlobalVariables.cs" />
+    <Compile Include="KeyboardInput.cs" />
     <Compile Include="Moved.cs" />
-    <Compile Include="Object.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

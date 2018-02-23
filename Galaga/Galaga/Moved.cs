@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace Galaga
 {
-    class Moved : Object
+    class Moved
     {
         protected Vector2 position;
         protected Vector2 velocity;

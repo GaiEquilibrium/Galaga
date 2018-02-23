@@ -36,6 +36,7 @@ namespace Galaga
         public void AddToScore(int addedScore) { score += addedScore; }
         public void Moving(int direction)
         {
+            if (direction == 0) return;
             if (direction > 0) { velocity.X = 0.15F; }
             if (direction < 0) { velocity.X = -0.15F; }
         }

@@ -19,7 +19,7 @@ namespace Galaga
     class Program : GameWindow
     {
         #region variables
-        int state;
+//        int state;
         //1 - Main menu
         //2 - Level preparation
         //3 - Playing
@@ -27,11 +27,11 @@ namespace Galaga
         //5 - Pause
         //6 - Exit
         //7 - Settings
-        int menuChoice;
+//        int menuChoice;
         //1 - Start Game    Resume          Start new game
         //2 - Settings      Exit to menu    Exit to menu
         //3 - Exit          Exit            Exit
-        const int maxMenuChoice = 3;
+//        const int maxMenuChoice = 3;
         TextRenderer generalText;
         Texture menuFrame;
 
@@ -46,8 +46,8 @@ namespace Galaga
         List<Star> starList = new List<Star>();
         Random randomizer;
 //        int isKeyPressed = 0;
-        bool isMovingRight = false;
-        bool isMovingLeft = false;
+//        bool isMovingRight = false;
+//        bool isMovingLeft = false;
 
         TextRenderer scoreLabel;
         TextRenderer score;
@@ -69,147 +69,24 @@ namespace Galaga
         }
         protected void OnKeyDown(object Sender, KeyboardKeyEventArgs E)
         {
-            if (state == 1)
+            int action;
+            KeyboardInput.KeyDown(Sender, E, out action);
+            if (action == int.MinValue) return;
+            if (action == 0)
             {
-                if (Key.Down == E.Key)
-                {
-                    menuChoice++;
-                    if (menuChoice > maxMenuChoice) { menuChoice = 1; }
-                }
-                if (Key.Up == E.Key)
-                {
-                    menuChoice--;
-                    if (menuChoice <= 0) { menuChoice = maxMenuChoice; }
-                }
-                if (Key.Enter == E.Key)
-                {
-                    if (menuChoice == 1)
-                    {
-                        menuChoice = 1;
-                        state = 2;
-                    }
-                    if (menuChoice == 2)
-                    {
-                        menuChoice = 1;
-                        state = 7;
-                    }
-                    if (menuChoice == 3)
-                    {
-                        menuChoice = 1;
-                        state = 6;
-                    }
-                }
+                if (player.CanShoot) bullets.Add(player.Shoot());
             }
-            if (state == 3)
-            {
-                if (Key.Left == E.Key)
-                {
-                    if (!isMovingLeft) player.Moving(-1);
-                    isMovingRight = false;
-                    isMovingLeft = true;
-                }
-                if (Key.Right == E.Key)
-                {
-                    if (!isMovingRight) player.Moving(1);
-                    isMovingLeft = false;
-                    isMovingRight = true;
-                }
-                if (Key.Space == E.Key)
-                {
-                    if (player.CanShoot) bullets.Add(player.Shoot());
-                }
-                if (Key.Escape == E.Key)
-                {
-                    state = 5;
-                }
-            }
-            if (state == 5)
-            {
-                if (Key.Down == E.Key)
-                {
-                    menuChoice++;
-                    if (menuChoice > maxMenuChoice) { menuChoice = 1; }
-                }
-                if (Key.Up == E.Key)
-                {
-                    menuChoice--;
-                    if (menuChoice <= 0) { menuChoice = maxMenuChoice; }
-                }
-                if (Key.Enter == E.Key)
-                {
-                    if (menuChoice == 1)
-                    {
-                        menuChoice = 1;
-                        state = 3;
-                    }
-                    if (menuChoice == 2)
-                    {
-                        menuChoice = 1;
-                        state = 1;
-                    }
-                    if (menuChoice == 3)
-                    {
-                        menuChoice = 1;
-                        state = 6;
-                    }
-                }
-            }
-            if (state == 4)
-            {
-                if (Key.Down == E.Key)
-                {
-                    menuChoice++;
-                    if (menuChoice > maxMenuChoice) { menuChoice = 1; }
-                }
-                if (Key.Up == E.Key)
-                {
-                    menuChoice--;
-                    if (menuChoice <= 0) { menuChoice = maxMenuChoice; }
-                }
-                if (Key.Enter == E.Key)
-                {
-                    if (menuChoice == 1)
-                    {
-                        menuChoice = 1;
-                        state = 2;
-                    }
-                    if (menuChoice == 2)
-                    {
-                        menuChoice = 1;
-                        state = 1;
-                    }
-                    if (menuChoice == 3)
-                    {
-                        menuChoice = 1;
-                        state = 6;
-                    }
-                }
-            }
-            if (state == 7)
-            {
-                if (Key.Escape == E.Key)
-                { state = 1; }
-            }
+            else player.Moving(action);
         }
         protected void OnKeyUp(object Sender, KeyboardKeyEventArgs E)
         {
-            if (state == 3)
-            {
-                if (Key.Left == E.Key)
-                {
-                    isMovingLeft = false;
-                }
-                if (Key.Right == E.Key)
-                {
-                    isMovingRight = false;
-                }
-            }
+            KeyboardInput.KeyUp(Sender, E);
         }
         protected override void OnLoad(EventArgs E)
         {
             base.OnLoad(E);
-            state = 1;
-            menuChoice = 1;
+            //state = 1;
+            //menuChoice = 1;
             generalText = new TextRenderer();
 
             GL.Enable(EnableCap.Texture2D);
@@ -269,19 +146,20 @@ namespace Galaga
         protected override void OnUpdateFrame(FrameEventArgs E)
         {
             base.OnUpdateFrame(E);
-            if (state == 2)
+            KeyboardInput.MenuChanger();
+            if (KeyboardInput.CurrentGameState == gameState.StartNewGame)
             {
                 LevelLoad();
-                state = 3;
+                KeyboardInput.CurrentGameState = gameState.Game;
                 return;
             }
-            if (state == 3)
+            if (KeyboardInput.CurrentGameState == gameState.Game)
             {
                 GlobalVariables.isAllMoving = true;
                 //if (isKeyPressed != 0) player.Moving();
                 //на самом деле этот метод вероятно не очень правильный
                 //ибо в таком варианте оно позволяет перемещать игрока в противоположном направленному направлении
-                if (isMovingLeft || isMovingRight) player.Moving();
+                if (KeyboardInput.IsMovingLeft || KeyboardInput.IsMovingRight) player.Moving();
 
                 GlobalVariables.MoveCenterEnemyPosition();
 
@@ -319,7 +197,7 @@ namespace Galaga
                         {
                             blastList.Add(new Blast(player.GetPos(), true));//не менять положение
                             player.Reset();
-                             if (player.GetLifeNum() <= 0) state = 4;
+                             if (player.GetLifeNum() <= 0) KeyboardInput.CurrentGameState = gameState.GameOver;
                             bullets.Remove(bullet);
                             tmpIsHit = true;
                         }
@@ -405,7 +283,7 @@ namespace Galaga
                         player.AddToScore(enemy.GetCost());
                         blastList.Add(new Blast(player.GetPos(), true));//не перемещать
                         player.Reset();
-                        if (player.GetLifeNum() <= 0) state = 4;
+                        if (player.GetLifeNum() <= 0) KeyboardInput.CurrentGameState = gameState.GameOver;
                         enemyList.Remove(enemy);
                         blastList.Add(new Blast(enemy.GetPos(), false));
                         break;
@@ -419,7 +297,7 @@ namespace Galaga
                 }
                 score.PrepareToRender(player.GetScore().ToString());
             }
-            if (state == 6)
+            if (KeyboardInput.CurrentGameState == gameState.Exit)
             {
                 GlobalVariables.ShootFlagNeg();
                 Exit();
@@ -433,7 +311,7 @@ namespace Galaga
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.MatrixMode(MatrixMode.Modelview);
 
-            if (state == 1)
+            if (KeyboardInput.CurrentGameState == gameState.MainMenu)
             {
                 GL.PushMatrix();
 
@@ -443,28 +321,28 @@ namespace Galaga
                 GL.Translate(0, -0.2, 0);
                 generalText.PrepareToRender("Start game");
                 generalText.Render();
-                if (menuChoice == 1)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.StartGame)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
                 GL.Translate(0, -0.1, 0);
                 generalText.PrepareToRender("Settings");
                 generalText.Render();
-                if (menuChoice == 2)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.Settings)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
                 GL.Translate(0, -0.1, 0);
                 generalText.PrepareToRender("Exit");
                 generalText.Render();
-                if (menuChoice == 3)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.Exit)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
 
                 GL.PopMatrix();
             }
-            if (state == 3 || state == 5 || state == 4)
+            if (KeyboardInput.CurrentGameState == gameState.Game || KeyboardInput.CurrentGameState == gameState.GameOver || KeyboardInput.CurrentGameState == gameState.Pause)
             {
                 RenderBackground();
                 RenderBackground();
@@ -492,13 +370,14 @@ namespace Galaga
                 }
                 player.RenderLifes();
             }
-            if (state == 4)
+            if (KeyboardInput.CurrentGameState == gameState.GameOver)
             {
                 GL.PushMatrix();
 
                 //isKeyPressed = 0;
-                isMovingLeft = false;
-                isMovingRight = false;
+                //                isMovingLeft = false;
+                //                isMovingRight = false;
+                KeyboardInput.PlayerStop();
 
                 GL.Translate(0, 0.5, 0);
                 generalText.PrepareToRender("GAME OVER");
@@ -506,34 +385,35 @@ namespace Galaga
                 GL.Translate(0, -0.2, 0);
                 generalText.PrepareToRender("Start new game");
                 generalText.Render();
-                if (menuChoice == 1)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.StartGame)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
                 GL.Translate(0, -0.1, 0);
                 generalText.PrepareToRender("Exit to menu");
                 generalText.Render();
-                if (menuChoice == 2)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.ExitToMenu)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
                 GL.Translate(0, -0.1, 0);
                 generalText.PrepareToRender("Exit");
                 generalText.Render();
-                if (menuChoice == 3)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.Exit)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
 
                 GL.PopMatrix();
             }
-            if (state == 5)
+            if (KeyboardInput.CurrentGameState == gameState.Pause)
             {
                 GL.PushMatrix();
 
                 //isKeyPressed = 0;
-                isMovingLeft = false;
-                isMovingRight = false;
+                //                isMovingLeft = false;
+                //                isMovingRight = false;
+                KeyboardInput.PlayerStop();
 
                 GL.Translate(0, 0.5, 0);
                 generalText.PrepareToRender("PAUSE");
@@ -541,34 +421,35 @@ namespace Galaga
                 GL.Translate(0, -0.2, 0);
                 generalText.PrepareToRender("Resume");
                 generalText.Render();
-                if (menuChoice == 1)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.Resume)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
                 GL.Translate(0, -0.1, 0);
                 generalText.PrepareToRender("Exit to menu");
                 generalText.Render();
-                if (menuChoice == 2)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.ExitToMenu)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
                 GL.Translate(0, -0.1, 0);
                 generalText.PrepareToRender("Exit");
                 generalText.Render();
-                if (menuChoice == 3)
+                if (KeyboardInput.CurrentMenuChoice == menuChoice.Exit)
                 {
                     MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
                 }
 
                 GL.PopMatrix();
             }
-            if (state == 7)
+            if (KeyboardInput.CurrentGameState == gameState.Settings)
             {
                 GL.PushMatrix();
 
                 //isKeyPressed = 0;
-                isMovingLeft = false;
-                isMovingRight = false;
+                //                isMovingLeft = false;
+                //                isMovingRight = false;
+                KeyboardInput.PlayerStop();
 
                 GL.Translate(0, 0.5, 0);
                 generalText.PrepareToRender("Settings");
@@ -701,8 +582,9 @@ namespace Galaga
             blastList.Clear();
             starList.Clear();
             //isKeyPressed = 0;
-            isMovingLeft = false;
-            isMovingRight = false;
+            //            isMovingLeft = false;
+            //            isMovingRight = false;
+            KeyboardInput.PlayerStop();
             GlobalVariables.ResetCenterEnemyPosition();
 
             randomizer = new Random();
