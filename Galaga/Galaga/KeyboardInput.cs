@@ -3,6 +3,10 @@ using OpenTK.Input;
 
 namespace Galaga
 {
+    //переименовать, и вероятно разбить ещё на 3 класса
+    //собствено ввод с клавиатуры
+    //отрисовка меню (и вообще всего текста?)
+    //всё что отвечает за состояния
     public enum gameState { MainMenu, StartNewGame, LevelLoad, Game, GameOver, Pause, Exit, Settings };
     public enum menuChoice { StartGame, Settings, Exit, Resume, ExitToMenu };
 

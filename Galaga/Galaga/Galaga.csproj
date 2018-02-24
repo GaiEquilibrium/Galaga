@@ -64,7 +64,7 @@
     <Compile Include="Blast.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Enemy.cs" />
-    <Compile Include="GameField.cs" />
+    <Compile Include="Level.cs" />
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="KeyboardInput.cs" />
     <Compile Include="Moved.cs" />

@@ -19,19 +19,6 @@ namespace Galaga
     class Program : GameWindow
     {
         #region variables
-//        int state;
-        //1 - Main menu
-        //2 - Level preparation
-        //3 - Playing
-        //4 - Game Over
-        //5 - Pause
-        //6 - Exit
-        //7 - Settings
-//        int menuChoice;
-        //1 - Start Game    Resume          Start new game
-        //2 - Settings      Exit to menu    Exit to menu
-        //3 - Exit          Exit            Exit
-//        const int maxMenuChoice = 3;
         TextRenderer generalText;
         Texture menuFrame;
 
@@ -45,9 +32,6 @@ namespace Galaga
         List<Blast> blastList = new List<Blast>();
         List<Star> starList = new List<Star>();
         Random randomizer;
-//        int isKeyPressed = 0;
-//        bool isMovingRight = false;
-//        bool isMovingLeft = false;
 
         TextRenderer scoreLabel;
         TextRenderer score;
