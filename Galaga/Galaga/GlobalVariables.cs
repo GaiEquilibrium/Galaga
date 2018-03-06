@@ -2,6 +2,7 @@
 
 namespace Galaga
 {
+    //удалить нафиг, а всё необходимое перенести в GameStates
     static class GlobalVariables
     {
         private static Vector2 windowSize;

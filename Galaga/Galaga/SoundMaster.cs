@@ -4,11 +4,16 @@ using System.Collections.Generic;
 
 namespace Galaga
 {
+    //отвечает непосредственно за воспроизведение звуков
+    //по сути работает с источниками звука, используя буферы
     class SoundMaster
     {
+        //TODO
+        //разобраться с щёлканьем в конце
+        //вероятно необходимо переписать во имя упрощения кода и улучшения работы
         private Dictionary<int, int> sourceBuffer = new Dictionary<int, int>();//source = key / buffer = value
 
-        public void SoundPlay() //запихивать это в отдельный поток?
+        public void SoundPlay()
         {
             using (AudioContext context = new AudioContext())
             {

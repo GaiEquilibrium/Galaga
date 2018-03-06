@@ -4,6 +4,8 @@ using System.Drawing;
 
 namespace Galaga
 {
+    //отвечает за корректное отображение взрыва
+    //(уж взрывы, это точно только массив взрывов)
     class Blast
     {
         private Vector2 position;

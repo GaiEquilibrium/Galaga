@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+using OpenTK;
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL;
 
 namespace Galaga
 {
+    //отвечает за работу с текстурами
+    //ему чхать, где рисовать, рисует заранее заготовленную текстуру
     public class Texture : IDisposable
     {
         public int GlHandle { get; protected set; }
@@ -17,7 +16,6 @@ namespace Galaga
         public int Height { get; protected set; }
 
         #region NPOT
-
         private static bool? CalculatedSupportForNpot;
         public static bool NpotIsSupported
         {
@@ -40,7 +38,6 @@ namespace Galaga
                 return CalculatedSupportForNpot.Value;
             }
         }
-
         public int PotWidth
         {
             get
@@ -55,7 +52,6 @@ namespace Galaga
                 return NpotIsSupported ? Height : (int)Math.Pow(2, Math.Ceiling(Math.Log(Height, 2)));
             }
         }
-
         #endregion
 
         public Texture(Bitmap Bitmap)
@@ -74,22 +70,22 @@ namespace Galaga
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         }
-
         public void Bind()
         {
             GL.BindTexture(TextureTarget.Texture2D, GlHandle);
+        }//нужен ли этот метод?
+        public void Render(Vector2 centerPosition, int objectSize)  //должен ли у всех объектов быть один размер?
+        {
+
         }
 
         #region Disposable
-
         private bool Disposed = false;
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
         protected virtual void Dispose(bool Disposing)
         {
             if (!Disposed)
@@ -101,12 +97,10 @@ namespace Galaga
                 Disposed = true;
             }
         }
-
         ~Texture()
         {
             Dispose(false);
         }
-
         #endregion
     }
 }

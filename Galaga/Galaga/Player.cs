@@ -17,7 +17,8 @@ using OpenTK;
 
 namespace Galaga
 {
-    class Player : Moved
+    public enum PlayerAction { MoveLeft, MoveRight, Shoot, Stop }
+    class Player : Ship
     {
         private int lifeNum;
         private int score;
@@ -42,7 +43,7 @@ namespace Galaga
         }
         public Bullet Shoot()
         {
-            GlobalVariables.ShootFlagInc();
+            GlobalVariables.ShootFlagInc(); 
             Vector2 tmpPos = position;
             tmpPos.Y++;
             return new Bullet(tmpPos,true);
@@ -54,7 +55,7 @@ namespace Galaga
             if (lifeNum > 0) { position.Y = -7; }
             else { position.Y = 20; }
         }
-        public void RenderObject() { RenderObject(textures.GetEnemyTypeNum()); }
+//        public void RenderObject() { RenderObject(textures.GetEnemyTypeNum()); }
         public void RenderLifes()//подумать над более удобным вариантом
         {
             Vector2 tmpPos;
@@ -62,7 +63,7 @@ namespace Galaga
             tmpPos.Y = -14;
             for (int i = 1; i < lifeNum; i++)
             {
-                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum(),velocity,0);
+//                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum(),velocity,0);
                 tmpPos.X++;
             }
         }

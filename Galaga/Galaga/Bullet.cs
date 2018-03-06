@@ -8,7 +8,8 @@ using OpenTK;
 
 namespace Galaga
 {
-    //только методы на проверки столкновений (и возможно собственно методы уничтожения)
+    //отвечает за выстрел, когда он виден и активен
+    //по сути, только методы на проверки столкновений (и возможно собственно методы уничтожения)
     class Bullet : Moved
     {
         private bool owner; //true - player, false - enemy
@@ -23,7 +24,7 @@ namespace Galaga
         public bool IsPlayerOwner() { return owner; }
         public void RenderObject()
         {
-            RenderObject(-1);
+//            RenderObject(-1);
         }
     }
 }

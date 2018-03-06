@@ -61,22 +61,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Background.cs" />
     <Compile Include="Blast.cs" />
+    <Compile Include="Boss.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="GameStates.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="KeyboardInput.cs" />
+    <Compile Include="Menu.cs" />
+    <Compile Include="MenuRenderer.cs" />
     <Compile Include="Moved.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer.cs" />
+    <Compile Include="Ship.cs" />
     <Compile Include="SoundBuffer.cs" />
     <Compile Include="SoundMaster.cs" />
     <Compile Include="Star.cs" />
-    <Compile Include="TextRenderer.cs" />
+    <Compile Include="TextString.cs" />
     <Compile Include="Texture.cs" />
-    <Compile Include="Textures.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

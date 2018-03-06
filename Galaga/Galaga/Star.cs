@@ -4,6 +4,8 @@ using System.Drawing;
 
 namespace Galaga
 {
+    //отвечает за работу звезды
+    //(т.к. все звёзды это всё таки пока что просто массив звёзд)
     class Star
     {
         private Vector2 position;

@@ -4,6 +4,7 @@ using OpenTK.Audio.OpenAL;
 
 namespace Galaga
 {
+    //звуковой буфер, содержит воспроизводимый буфер
     class SoundBuffer
     {
         private string filename = "SoundTest.wav";
