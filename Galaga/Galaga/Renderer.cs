@@ -20,7 +20,7 @@ namespace Galaga
             if (GameStates.IsGame)
             {
                 Background.RenderBackground();
-                LevelRenderer.Render();
+                Level.Render();
             }
             else if (GameStates.IsMenu)
             {

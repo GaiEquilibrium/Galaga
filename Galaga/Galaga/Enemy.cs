@@ -104,7 +104,7 @@ namespace Galaga
 //            SoundMaster.Shoot();//надо будет так же несколько переделать работу со звуком
             Vector2 tmpPos = position;
             tmpPos.Y--;
-            return new Bullet(tmpPos, Belonging.Enemy);
+            return new Bullet(tmpPos, Belonging.Enemy,-1);
         }
 
         public Vector2 Offset => offset;

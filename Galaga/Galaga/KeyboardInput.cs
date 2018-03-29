@@ -6,33 +6,42 @@ namespace Galaga
     {
         private static bool _isMovingRight;              
         private static bool _isMovingLeft;
+        private static int _playerId;
 
         static KeyboardInput ()
         {
             _isMovingLeft = false;
             _isMovingRight = false;
+            _playerId = -1;
         }
+
+        public static void SetPlayerId(int playerId)
+        {
+            _playerId = playerId;
+        }
+
         public static void KeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            if (GameStates.IsGame)
+
+            if (GameStates.IsGame && _playerId >= 0)
             {
                 switch (e.Key)
                 {
                     case Key.Left:
                     {
                         _isMovingLeft = true;
-                        Level.PlayerAction(PlayerAction.MoveLeft);
+                        Level.Players[_playerId].Action(PlayerAction.MoveLeft);
                         break;
                     }
                     case Key.Right:
                     {
                         _isMovingRight = true;
-                        Level.PlayerAction(PlayerAction.MoveRight);
+                        Level.Players[_playerId].Action(PlayerAction.MoveRight);
                         break;
                     }
                     case Key.Space:
                     {
-                        Level.PlayerAction(PlayerAction.Shoot);
+                        Level.Players[_playerId].Action(PlayerAction.Shoot);
                         break;
                     }
                     case Key.Escape:
@@ -66,20 +75,20 @@ namespace Galaga
         }
         public static void KeyUp(object sender, KeyboardKeyEventArgs e)
         {
-            if (GameStates.IsGame)
+            if (GameStates.IsGame && _playerId >= 0)
             {
                 switch (e.Key)
                 {
                     case Key.Left:
                     {
                         _isMovingLeft = false;
-                        if (!_isMovingRight) Level.PlayerAction(PlayerAction.Stop);
+                        if (!_isMovingRight) Level.Players[_playerId].Action(PlayerAction.Stop);
                         break;
                     }
                     case Key.Right:
                     {
                         _isMovingRight = false;
-                        if (!_isMovingLeft) Level.PlayerAction(PlayerAction.Stop);
+                        if (!_isMovingLeft) Level.Players[_playerId].Action(PlayerAction.Stop);
                         break;
                     }
                 }

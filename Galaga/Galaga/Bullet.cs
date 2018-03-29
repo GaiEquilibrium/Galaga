@@ -7,18 +7,30 @@ namespace Galaga
     public class Bullet : Moved
     {
         public bool IsComplete { get; private set; }
+        public int PlayerId { get; }
 
-        public Bullet(Vector2 startPosition, Belonging newOwner)
+        public Bullet(Vector2 startPosition, Belonging newOwner, int newPlayerId)
         {
             position = startPosition;
             Belonging = newOwner;
-            if (Belonging == Belonging.Player) velocity.Y = 0.8F;
-            else if (Belonging == Belonging.Enemy) velocity.Y = -0.8F;
+            if (Belonging == Belonging.Player)
+            {
+                PlayerId = newPlayerId;
+                velocity.Y = 0.8F;
+            }
+            else if (Belonging == Belonging.Enemy)
+            {
+                PlayerId = -1;
+                velocity.Y = -0.8F;
+            }
             else
             {
+                PlayerId = -1;
                 velocity.Y = 0;
                 position.Y = 20;
             }
+            GameObject = GameObject.Bullet;
+            State = 0;
         }
 
         public new void Moving()

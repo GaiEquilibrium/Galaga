@@ -9,34 +9,40 @@ namespace Galaga
         public int LifeNum { get; private set; }
         public int Score { get; private set; }
         public bool CanShoot;
+        public bool WantShoot { get; private set; }
+        public int PlayerId { get; }
 
         public Player()
         {
+            PlayerId = Level.PlayerId;
             position.X = -0.5F;
             position.Y = -7;
             LifeNum = 3;
             Score = 0;
+            GameObject = GameObject.Player;
+            Belonging = Belonging.Player;
+            CanShoot = true;
+            WantShoot = false;
         }
         public void ReduceLifeNum() { LifeNum--; }
         public void AddToScore(int addedScore) { Score += addedScore; }
-        public Bullet Action(PlayerAction action)
+        public void Action(PlayerAction action)
         {
-            Bullet returnedBullet = null;
             switch (action)
             {
                 case PlayerAction.MoveLeft:
                 {
-                    velocity.X = 0.15F;
+                    velocity.X = -0.15F;
                     break;
                 }
                 case PlayerAction.MoveRight:
                 {
-                    velocity.X = -0.15F;
+                    velocity.X = 0.15F;
                     break;
                 }
                 case PlayerAction.Shoot:
                 {
-                    returnedBullet = Shoot();
+                    WantShoot = true;
                     break;
                 }
                 case PlayerAction.Stop:
@@ -45,15 +51,15 @@ namespace Galaga
                     break;
                 }
             }
-            return returnedBullet;
         }
 
         public Bullet Shoot()
         {
-//            SoundMaster.Shoot(); 
+//            SoundMaster.Shoot();
+            WantShoot = false;
             Vector2 tmpPos = Position;
             tmpPos.Y++;
-            return new Bullet(tmpPos,Belonging.Player);
+            return new Bullet(tmpPos,Belonging.Player,PlayerId);
         }
         public void Reset()
         {
@@ -73,13 +79,6 @@ namespace Galaga
 //                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum(),velocity,0);
                 tmpPos.X++;
             }
-        }
-
-        public Bullet Update(PlayerAction action)
-        {
-            Bullet returnedBullet = Action(action);
-            Moving();
-            return returnedBullet;
         }
     }
 }

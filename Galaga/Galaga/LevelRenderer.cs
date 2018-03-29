@@ -1,12 +1,14 @@
-﻿namespace Galaga
+﻿using System.Collections.Generic;
+
+namespace Galaga
 {
     static class LevelRenderer
     {
         public static void Render()
         {
-            foreach (Player player in Level.Players)
+            foreach (KeyValuePair<int, Player> player in Level.Players)
             {
-                player.Render();
+                player.Value.Render();
             }
             foreach (Enemy enemy in Level.Enemies)
             {
