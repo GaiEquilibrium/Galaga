@@ -11,7 +11,9 @@ namespace Galaga
         //TODO
         //разобраться с щёлканьем в конце
         //вероятно необходимо переписать во имя упрощения кода и улучшения работы
-        private Dictionary<int, int> sourceBuffer = new Dictionary<int, int>();//source = key / buffer = value
+        private Dictionary<int, int> _sourceBuffer = new Dictionary<int, int>();//source = key / buffer = value
+
+        private int ShootFlag = 0;
 
         public void SoundPlay()
         {
@@ -24,25 +26,25 @@ namespace Galaga
                 //main cycle
                 while (true)
                 {
-                    if (GlobalVariables.ShootFlag < 0) break;
+                    if (ShootFlag < 0) break;
                     //creating new sounds
-                    if (GlobalVariables.ShootFlag > 0)
+                    if (ShootFlag > 0)
                     {
                         shootBuffer = new SoundBuffer();
                         int source = AL.GenSource();
                         AL.Source(source, ALSourcei.Buffer, shootBuffer.GetSoundBuffer());
 
-                        sourceBuffer.Add(source, shootBuffer.GetSoundBuffer());
+                        _sourceBuffer.Add(source, shootBuffer.GetSoundBuffer());
 
                         AL.SourcePlay(source);
-                        GlobalVariables.ShootFlagDec();
+                        ShootFlag--;
                     }
 
                     isAll = false;
                     while (!isAll)
                     {
                         isAll = true;
-                        foreach (KeyValuePair<int, int> sourceBufferPair in sourceBuffer)
+                        foreach (KeyValuePair<int, int> sourceBufferPair in _sourceBuffer)
                         {
                             int state;
                             // Query the source to find out when it stops playing.
@@ -52,7 +54,7 @@ namespace Galaga
                                 AL.SourceStop(sourceBufferPair.Key);
                                 AL.DeleteSource(sourceBufferPair.Key);
                                 AL.DeleteBuffer(sourceBufferPair.Value);
-                                sourceBuffer.Remove(sourceBufferPair.Key);
+                                _sourceBuffer.Remove(sourceBufferPair.Key);
                                 isAll = false;
                                 break;
                             }
@@ -63,7 +65,7 @@ namespace Galaga
                 while (!isAll)
                 {
                     isAll = true;
-                    foreach (KeyValuePair<int, int> sourceBufferPair in sourceBuffer)
+                    foreach (KeyValuePair<int, int> sourceBufferPair in _sourceBuffer)
                     {
                         int state;
                         // Query the source to find out when it stops playing.
@@ -73,7 +75,7 @@ namespace Galaga
                             AL.SourceStop(sourceBufferPair.Key);
                             AL.DeleteSource(sourceBufferPair.Key);
                             AL.DeleteBuffer(sourceBufferPair.Value);
-                            sourceBuffer.Remove(sourceBufferPair.Key);
+                            _sourceBuffer.Remove(sourceBufferPair.Key);
                             isAll = false;
                             break;
                         }

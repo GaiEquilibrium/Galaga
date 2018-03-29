@@ -3,7 +3,7 @@ using OpenTK;
 
 namespace Galaga
 {
-    class Ship : Moved
+    public class Ship : Moved
     {
         public bool IsCollide(Vector2 enemyPos)
         {

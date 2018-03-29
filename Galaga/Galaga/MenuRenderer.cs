@@ -24,17 +24,17 @@ namespace Galaga
             GL.Translate(0, 0.5, 0);
             switch (GameStates.GameState)
             {
-                case gameState.MainMenu:
+                case GameState.MainMenu:
                     {
                         _textString.PrepareToRender("GALAGA");
                         break;
                     }
-                case gameState.Pause:
+                case GameState.Pause:
                     {
                         _textString.PrepareToRender("PAUSE");
                         break;
                     }
-                case gameState.GameOver:
+                case GameState.GameOver:
                     {
                         _textString.PrepareToRender("GAME OVER");
                         break;
@@ -44,31 +44,31 @@ namespace Galaga
 
             GL.Translate(0, -0.2, 0);
 
-            foreach (KeyValuePair<int, menuChoice> pair in Menu.CurrentMenu)
+            foreach (KeyValuePair<int, MenuChoice> pair in Menu.CurrentMenu)
             {
                 switch (pair.Value)
                 {
-                    case menuChoice.Exit:
+                    case MenuChoice.Exit:
                         {
                             _textString.PrepareToRender("Exit");
                             break;
                         }
-                    case menuChoice.ExitToMenu:
+                    case MenuChoice.ExitToMenu:
                         {
                             _textString.PrepareToRender("Exit to menu");
                             break;
                         }
-                    case menuChoice.StartGame:
+                    case MenuChoice.StartGame:
                         {
                             _textString.PrepareToRender("Start new game");
                             break;
                         }
-                    case menuChoice.Resume:
+                    case MenuChoice.Resume:
                         {
                             _textString.PrepareToRender("Resume");
                             break;
                         }
-                    case menuChoice.Settings:
+                    case MenuChoice.Settings:
                         {
                             _textString.PrepareToRender("Settings");
                             break;
@@ -78,7 +78,7 @@ namespace Galaga
 
                 if (pair.Key == Menu.CurrentKey)
                 {
-                    FrameRender(_textString.Size.X / GlobalVariables.GetWindowSize().X, _textString.Size.Y / GlobalVariables.GetWindowSize().Y);
+                    FrameRender(_textString.Size.X / WindowProperty.WindowSize.X, _textString.Size.Y / WindowProperty.WindowSize.Y);
                 }
                 GL.Translate(0, -0.1, 0);
             }

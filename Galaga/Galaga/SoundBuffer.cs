@@ -7,17 +7,17 @@ namespace Galaga
     //звуковой буфер, содержит воспроизводимый буфер
     class SoundBuffer
     {
-        private string filename = "SoundTest.wav";
-        private int soundBuffer;
+        private string _filename = "SoundTest.wav";
+        private int _soundBuffer;
 
         public SoundBuffer()
         {
-            soundBuffer = BufferSetup();
+            _soundBuffer = BufferSetup();
         }
-        public SoundBuffer(string SoundFile)
+        public SoundBuffer(string soundFile)
         {
-            filename = SoundFile;
-            soundBuffer = BufferSetup();
+            _filename = soundFile;
+            _soundBuffer = BufferSetup();
         }
         private byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {
@@ -31,34 +31,34 @@ namespace Galaga
                 if (signature != "RIFF")
                     throw new NotSupportedException("Specified stream is not a wave file.");
 
-                int riff_chunck_size = reader.ReadInt32();
+                int riffChunckSize = reader.ReadInt32();
 
                 string format = new string(reader.ReadChars(4));
                 if (format != "WAVE")
                     throw new NotSupportedException("Specified stream is not a wave file.");
 
                 // WAVE header
-                string format_signature = new string(reader.ReadChars(4));
-                if (format_signature != "fmt ")
+                string formatSignature = new string(reader.ReadChars(4));
+                if (formatSignature != "fmt ")
                     throw new NotSupportedException("Specified wave file is not supported.");
 
-                int format_chunk_size = reader.ReadInt32();
-                int audio_format = reader.ReadInt16();
-                int num_channels = reader.ReadInt16();
-                int sample_rate = reader.ReadInt32();
-                int byte_rate = reader.ReadInt32();
-                int block_align = reader.ReadInt16();
-                int bits_per_sample = reader.ReadInt16();
+                int formatChunkSize = reader.ReadInt32();
+                int audioFormat = reader.ReadInt16();
+                int numChannels = reader.ReadInt16();
+                int sampleRate = reader.ReadInt32();
+                int byteRate = reader.ReadInt32();
+                int blockAlign = reader.ReadInt16();
+                int bitsPerSample = reader.ReadInt16();
 
-                string data_signature = new string(reader.ReadChars(4));
-                if (data_signature != "data")
+                string dataSignature = new string(reader.ReadChars(4));
+                if (dataSignature != "data")
                     throw new NotSupportedException("Specified wave file is not supported.");
 
-                int data_chunk_size = reader.ReadInt32();
+                int dataChunkSize = reader.ReadInt32();
 
-                channels = num_channels;
-                bits = bits_per_sample;
-                rate = sample_rate;
+                channels = numChannels;
+                bits = bitsPerSample;
+                rate = sampleRate;
 
                 return reader.ReadBytes((int)reader.BaseStream.Length);
             }
@@ -77,12 +77,12 @@ namespace Galaga
             int buffer;
 
             buffer = AL.GenBuffer();
-            int channels, bits_per_sample, sample_rate;
-            byte[] sound_data = LoadWave(File.Open(filename, FileMode.Open), out channels, out bits_per_sample, out sample_rate);
-            AL.BufferData(buffer, GetSoundFormat(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
+            int channels, bitsPerSample, sampleRate;
+            byte[] soundData = LoadWave(File.Open(_filename, FileMode.Open), out channels, out bitsPerSample, out sampleRate);
+            AL.BufferData(buffer, GetSoundFormat(channels, bitsPerSample), soundData, soundData.Length, sampleRate);
 
             return buffer;
         }
-        public int GetSoundBuffer() { return soundBuffer; }
+        public int GetSoundBuffer() { return _soundBuffer; }
     }
 }

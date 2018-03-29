@@ -9,10 +9,10 @@ namespace Galaga
     //возможно сам фон стоит вынести в отдельный класс?
     static class Background
     {
-        static Texture backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
+        static Texture _backgroundTexture = new Texture(new Bitmap("Texture/background.png"));
         public static void RenderBackground()
         {
-            backgroundTexture.Bind();
+            _backgroundTexture.Bind();
             GL.Color4(Color4.Black);
             GL.Begin(BeginMode.Quads);
 

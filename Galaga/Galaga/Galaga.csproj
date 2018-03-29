@@ -68,8 +68,11 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="GameStates.cs" />
     <Compile Include="Level.cs" />
-    <Compile Include="GlobalVariables.cs" />
+    <Compile Include="Textures.cs" />
+    <Compile Include="WindowProperty.cs" />
     <Compile Include="KeyboardInput.cs" />
+    <Compile Include="LevelRenderer.cs" />
+    <Compile Include="LevelUpdater.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="MenuRenderer.cs" />
     <Compile Include="Moved.cs" />
@@ -101,9 +104,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Texture\2\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="SoundTest.WAV">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -159,34 +160,61 @@
     <Content Include="Texture\1\PlayerShip.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Texture\2\boss2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\boss3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\boss0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\boss1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\Enemy00.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\Enemy01.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\Enemy10.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\Enemy11.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Texture\2\Player.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Texture\background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastE1_0.png">
+    <Content Include="Texture\BlastE0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastE1_1.png">
+    <Content Include="Texture\BlastE1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastE1_2.png">
+    <Content Include="Texture\BlastE2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastE1_3.png">
+    <Content Include="Texture\BlastE3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastE1_4.png">
+    <Content Include="Texture\BlastE4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastP1_0.png">
+    <Content Include="Texture\BlastP0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastP1_1.png">
+    <Content Include="Texture\BlastP1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastP1_2.png">
+    <Content Include="Texture\BlastP2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Texture\BlastP1_3.png">
+    <Content Include="Texture\BlastP3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Texture\Bullet.png">

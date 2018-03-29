@@ -3,12 +3,11 @@
 using OpenTK;
 using System.Drawing;
 using System.Drawing.Imaging;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Galaga
 {
-    //отвечает за работу с текстурами
-    //ему чхать, где рисовать, рисует заранее заготовленную текстуру
     public class Texture : IDisposable
     {
         public int GlHandle { get; protected set; }
@@ -16,26 +15,26 @@ namespace Galaga
         public int Height { get; protected set; }
 
         #region NPOT
-        private static bool? CalculatedSupportForNpot;
+        private static bool? _calculatedSupportForNpot;
         public static bool NpotIsSupported
         {
             get
             {
-                if (!CalculatedSupportForNpot.HasValue)
+                if (!_calculatedSupportForNpot.HasValue)
                 {
-                    CalculatedSupportForNpot = false;
-                    int ExtensionsCount;
-                    GL.GetInteger(GetPName.NumExtensions, out ExtensionsCount);
-                    for (var i = 0; i < ExtensionsCount; i++)
+                    _calculatedSupportForNpot = false;
+                    int extensionsCount;
+                    GL.GetInteger(GetPName.NumExtensions, out extensionsCount);
+                    for (var i = 0; i < extensionsCount; i++)
                     {
                         if ("GL_ARB_texture_non_power_of_two" == GL.GetString(StringName.Extensions, i))
                         {
-                            CalculatedSupportForNpot = true;
+                            _calculatedSupportForNpot = true;
                             break;
                         }
                     }
                 }
-                return CalculatedSupportForNpot.Value;
+                return _calculatedSupportForNpot.Value;
             }
         }
         public int PotWidth
@@ -54,18 +53,18 @@ namespace Galaga
         }
         #endregion
 
-        public Texture(Bitmap Bitmap)
+        public Texture(Bitmap bitmap)
         {
             GlHandle = GL.GenTexture();
-            Bind();
+            GL.BindTexture(TextureTarget.Texture2D, GlHandle);
 
-            Width = Bitmap.Width;
-            Height = Bitmap.Height;
+            Width = bitmap.Width;
+            Height = bitmap.Height;
 
-            var BitmapData = Bitmap.LockBits(new Rectangle(0, 0, Bitmap.Width, Bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, PotWidth, PotHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, BitmapData.Width, BitmapData.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, BitmapData.Scan0);
-            Bitmap.UnlockBits(BitmapData);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, bitmapData.Width, bitmapData.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+            bitmap.UnlockBits(bitmapData);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -73,28 +72,24 @@ namespace Galaga
         public void Bind()
         {
             GL.BindTexture(TextureTarget.Texture2D, GlHandle);
-        }//нужен ли этот метод?
-        public void Render(Vector2 centerPosition, int objectSize)  //должен ли у всех объектов быть один размер?
-        {
-
         }
 
         #region Disposable
-        private bool Disposed = false;
+        private bool _disposed = false;
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        protected virtual void Dispose(bool Disposing)
+        protected virtual void Dispose(bool disposing)
         {
-            if (!Disposed)
+            if (!_disposed)
             {
-                if (Disposing)
+                if (disposing)
                 {
                     GL.DeleteTexture(GlHandle);
                 }
-                Disposed = true;
+                _disposed = true;
             }
         }
         ~Texture()

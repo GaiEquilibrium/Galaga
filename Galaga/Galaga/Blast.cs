@@ -1,67 +1,43 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System.Drawing;
 
 namespace Galaga
 {
     //отвечает за корректное отображение взрыва
-    //(уж взрывы, это точно только массив взрывов)
-    class Blast
+    class Blast:Moved
     {
-        private Vector2 position;
-        private int stage;
-        bool isPlayer;
+        private static readonly int EnemyMaxState = 5;
+        private static readonly int PlayerMaxState = 4;
 
-        static int frameToStage = 3;
-        private static int enemyStage = 5;
-        private static int playerStage = 4;
-        private static Texture[] enemyTexture = new Texture[enemyStage];
-        private static Texture[] playerTexture = new Texture[playerStage];
+        public bool IsComplete { get; private set; }
 
-        static Blast()
+        public Blast(Vector2 newPositiion, Belonging newBelonging)
         {
-            for (int i = 0; i < enemyStage; i++)
-            {
-                enemyTexture[i] = new Texture(new Bitmap("Texture/BlastE1_" + i + ".png"));
-            }
-            for (int i = 0; i < playerStage; i++)
-            {
-                playerTexture[i] = new Texture(new Bitmap("Texture/BlastP1_" + i + ".png"));
-            }
-        }
-        public Blast(Vector2 newPositiion, bool newIsPlayer)
-        {
-            isPlayer = newIsPlayer;
+            Belonging = newBelonging;
+            GameObject = GameObject.Blast;
             position = newPositiion;
-            stage = 0;
+            State = 0;
+            frameToStage = 3;
+            Counter = 0;
+            IsComplete = false;
+            if (Belonging == Belonging.None)
+            {
+                IsComplete = true;
+            }
         }
-        public bool RenderBlast()//true - blast complete
+
+        public new void Update()
         {
-            if (isPlayer && stage < playerStage*frameToStage) playerTexture[stage/ frameToStage].Bind();
-            else if (!isPlayer && stage < enemyStage* frameToStage) enemyTexture[stage/ frameToStage].Bind();
-            else return true;
+            //throw new System.NotImplementedException(); //???
 
-            GL.PushMatrix();
-            GL.Translate((position.X+0.5) * GlobalVariables.GetGlObjectSize().X, (position.Y + 0.5) * GlobalVariables.GetGlObjectSize().Y, 0);//хммм
-
-            GL.Begin(BeginMode.Quads);
-            GL.TexCoord2(1, 1);
-            GL.Vertex2(-GlobalVariables.GetGlObjectSize().X / 2, -GlobalVariables.GetGlObjectSize().Y / 2);
-
-            GL.TexCoord2(0, 1);
-            GL.Vertex2(GlobalVariables.GetGlObjectSize().X / 2, -GlobalVariables.GetGlObjectSize().Y / 2);
-
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(GlobalVariables.GetGlObjectSize().X / 2, GlobalVariables.GetGlObjectSize().Y / 2);
-
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(-GlobalVariables.GetGlObjectSize().X / 2, GlobalVariables.GetGlObjectSize().Y / 2);
-
-            GL.End();
-            GL.PopMatrix();
-
-            stage++;
-            return false;
+            if (Counter >= frameToStage)
+            {
+                State++;
+                Counter = 0;
+            }
+            if (Belonging == Belonging.Enemy && State == EnemyMaxState || Belonging == Belonging.Player && State == PlayerMaxState)
+            {
+                IsComplete = true;
+            }
         }
     }
 }

@@ -2,17 +2,43 @@
 
 namespace Galaga
 {
-    //по сути родитель для всех перемещающихся объектов и содержит самые простые общие методы
-    class Moved
+    public enum GameObject
+    {
+        Player,
+        Enemy,
+        Boss,
+        Star,
+        Blast,
+        Bullet
+    }
+
+    public enum Belonging
+    {
+        Player,
+        Enemy,
+        None
+    }
+
+    public abstract class Moved
     {
         protected Vector2 position;
         protected Vector2 velocity;
-//        protected Texture texture;// = new Texture();
+        protected int frameToStage;
 
-        public Vector2 GetPos() { return position; }
-        public Vector2 GetVel() { return velocity; }
-        public void SetVel(Vector2 vel) { velocity = vel; } //  !!!проверить, есть ли способ обойтись без этого!!!
-        public void Moving() { position += velocity; }
-//        public void RenderObject(int obj) { texture.RenderObject(position,obj,velocity,0); }
+        public int Counter;
+        public GameObject GameObject { get; protected set; }
+        public Belonging Belonging { get; protected set; }
+        public Vector2 Position => position;
+        public Vector2 Velocity => velocity;
+        public int State { get; protected set; }    //тут можно ещё и хранить здоровье боссов параллельно
+
+        public void Moving() { position += Velocity; }
+
+        public void Render() { Textures.Render(this); }
+
+        public void Update()
+        {
+            Moving();
+        }
     }
 }

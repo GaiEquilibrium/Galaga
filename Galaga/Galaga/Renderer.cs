@@ -17,12 +17,10 @@ namespace Galaga
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.MatrixMode(MatrixMode.Modelview);
 
-//            Background.RenderBackground();
-//            Background.RenderBackground();
             if (GameStates.IsGame)
             {
                 Background.RenderBackground();
-                Level.Render();
+                LevelRenderer.Render();
             }
             else if (GameStates.IsMenu)
             {

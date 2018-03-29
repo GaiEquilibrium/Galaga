@@ -25,11 +25,11 @@ namespace Galaga
                 game.Run(30);
             }
         }
-        public Program() : base((int)GlobalVariables.GetWindowSize().X, (int)GlobalVariables.GetWindowSize().Y, GraphicsMode.Default, "Galaga")
+        public Program() : base((int)WindowProperty.WindowSize.X, (int)WindowProperty.WindowSize.Y, GraphicsMode.Default, "Galaga")
         {
             VSync = VSyncMode.On;
             Keyboard.KeyDown += KeyboardInput.KeyDown;//хотя тут можно сразу на статическую ф-ю ссылаться тогда =) (короче, проверить, нормально ли работает в таком виде)
-            Keyboard.KeyUp += new EventHandler<KeyboardKeyEventArgs>(OnKeyUp);// не уверен что без серого заработает, так что надо проверить
+            Keyboard.KeyUp += KeyboardInput.KeyUp;// не уверен что без серого заработает, так что надо проверить
         }
         protected void OnKeyUp(object sender, KeyboardKeyEventArgs e)
         {
@@ -41,9 +41,10 @@ namespace Galaga
 
             _renderer = new Renderer();
 
-            _soundMaster = new SoundMaster();
-            Thread soundMasterThread = new Thread(_soundMaster.SoundPlay);
-            soundMasterThread.Start();
+            //надо переписать
+//            _soundMaster = new SoundMaster();
+//            Thread soundMasterThread = new Thread(_soundMaster.SoundPlay);
+//            soundMasterThread.Start();
         }
         protected override void OnResize(EventArgs e)
         {
@@ -52,29 +53,21 @@ namespace Galaga
             //тоже вынести в какой то отдельный класс, отвечающий чисто за окна
             GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
-//как минимум пока что, нафиг вообще какую либо смену размеров
-//            ProjectionWidth = NominalWidth;
-//            ProjectionHeight = (float)ClientRectangle.Height / (float)ClientRectangle.Width * ProjectionWidth;
-//            if (ProjectionHeight < NominalHeight)
-//            {
-//                ProjectionHeight = NominalHeight;
-//                ProjectionWidth = (float)ClientRectangle.Width / (float)ClientRectangle.Height * ProjectionHeight;
-//            }
-            if (ClientSize.Width < (int)GlobalVariables.GetWindowSize().X)
+            if (ClientSize.Width < (int)WindowProperty.WindowSize.X)
             {
-                ClientSize = new Size((int)GlobalVariables.GetWindowSize().X, ClientSize.Height);
+                ClientSize = new Size((int)WindowProperty.WindowSize.X, ClientSize.Height);
             }
-            if (ClientSize.Height < (int)GlobalVariables.GetWindowSize().Y)
+            if (ClientSize.Height < (int)WindowProperty.WindowSize.Y)
             {
-                ClientSize = new Size(ClientSize.Width, (int)GlobalVariables.GetWindowSize().Y);
+                ClientSize = new Size(ClientSize.Width, (int)WindowProperty.WindowSize.Y);
             }
-            if (ClientSize.Width > (int)GlobalVariables.GetWindowSize().X)
+            if (ClientSize.Width > (int)WindowProperty.WindowSize.X)
             {
-                ClientSize = new Size((int)GlobalVariables.GetWindowSize().X, ClientSize.Height);
+                ClientSize = new Size((int)WindowProperty.WindowSize.X, ClientSize.Height);
             }
-            if (ClientSize.Height > (int)GlobalVariables.GetWindowSize().Y)
+            if (ClientSize.Height > (int)WindowProperty.WindowSize.Y)
             {
-                ClientSize = new Size(ClientSize.Width, (int)GlobalVariables.GetWindowSize().Y);
+                ClientSize = new Size(ClientSize.Width, (int)WindowProperty.WindowSize.Y);
             }
 
         }
@@ -84,7 +77,7 @@ namespace Galaga
             
             Level.Update();
 
-            if (GameStates.GameState == gameState.Exit) Exit();
+            if (GameStates.GameState == GameState.Exit) Exit();
         }
         protected override void OnRenderFrame(FrameEventArgs e)
         {

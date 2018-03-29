@@ -6,7 +6,7 @@
 
     //предположительно примерно всё, единственное что вероятно надобно будет добавить всякой мелочи из глобальных переменных
 
-    public enum gameState
+    public enum GameState
     {
         MainMenu,
         StartNewGame,
@@ -18,7 +18,7 @@
         Settings
     };
 
-    public enum menuChoice
+    public enum MenuChoice
     {
         StartGame,
         Settings,
@@ -29,62 +29,62 @@
 
     static class GameStates
     {
-        public static gameState GameState { get; private set; }
-        public static bool IsGame => GameState == gameState.Game;
-        public static bool IsMenu => GameState == gameState.MainMenu || GameState == gameState.Pause || GameState == gameState.GameOver;
+        public static GameState GameState { get; private set; }
+        public static bool IsGame => GameState == GameState.Game;
+        public static bool IsMenu => GameState == GameState.MainMenu || GameState == GameState.Pause || GameState == GameState.GameOver;
 
         static GameStates()
         {
-            GameState = gameState.MainMenu;
+            GameState = GameState.MainMenu;
             Menu.MenuGenerator();
         }
 
         public static void KeyboardStateChanger()
         {
             //заглушка, пока не напишу меню настроек
-            if (GameState == gameState.Settings)
+            if (GameState == GameState.Settings)
             {
-                GameState = gameState.MainMenu;
+                GameState = GameState.MainMenu;
                 Menu.MenuGenerator();
                 return;
             }
 
             if (IsGame)
             {
-                GameState = gameState.Pause;
+                GameState = GameState.Pause;
             }
             else if (IsMenu)
             {
                 switch (Menu.CurrentChoice) //         !!!ДОПИСАТЬ!!!
                 {
-                    case menuChoice.StartGame:
+                    case MenuChoice.StartGame:
                     {
-                        GameState = gameState.LevelLoad;
+                        GameState = GameState.LevelLoad;
                         break;
                     }
-                    case menuChoice.Exit:
+                    case MenuChoice.Exit:
                     {
-                        GameState = gameState.Exit;
+                        GameState = GameState.Exit;
                         break;
                     }
-                    case menuChoice.ExitToMenu:
+                    case MenuChoice.ExitToMenu:
                     {
-                        GameState = gameState.MainMenu;
+                        GameState = GameState.MainMenu;
                         break;
                     }
-                    case menuChoice.Resume:
+                    case MenuChoice.Resume:
                     {
-                        GameState = gameState.Game;
+                        GameState = GameState.Game;
                         break;
                     }
-                    case menuChoice.Settings:
+                    case MenuChoice.Settings:
                     {
-                        GameState = gameState.Settings;
+                        GameState = GameState.Settings;
                         break;
                     }
                     default:
                     {
-                        GameState = gameState.Exit;
+                        GameState = GameState.Exit;
                         break;
                     }
                 }
@@ -94,13 +94,13 @@
 
         public static void LevelStateChanger()
         {
-            if (GameState == gameState.LevelLoad)
+            if (GameState == GameState.LevelLoad)
             {
-                GameState = gameState.Game;
+                GameState = GameState.Game;
             }
-            else if (GameState == gameState.Game)
+            else if (GameState == GameState.Game)
             {
-                GameState = gameState.GameOver;
+                GameState = GameState.GameOver;
             }
             Menu.MenuGenerator();
         }

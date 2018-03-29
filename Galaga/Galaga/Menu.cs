@@ -4,16 +4,16 @@ namespace Galaga
 {
     internal static class Menu
     {
-        private static Dictionary<int, menuChoice> _menu; //какого лешего оно хочет тут readonly O.o
-        private static gameState _prevState;
-        private static menuChoice _currentChoice;
+        private static Dictionary<int, MenuChoice> _menu; //какого лешего оно хочет тут readonly O.o
+        private static GameState _prevState;
+        private static MenuChoice _currentChoice;
 
         static Menu()
         {
-            _prevState = gameState.Exit;
+            _prevState = GameState.Exit;
             CurrentKey = 0;
-            _currentChoice = menuChoice.Exit;
-            _menu = new Dictionary<int, menuChoice>();
+            _currentChoice = MenuChoice.Exit;
+            _menu = new Dictionary<int, MenuChoice>();
         }
 
         public static void MenuGenerator() //      !!!ДОПИСАТЬ!!!
@@ -24,25 +24,25 @@ namespace Galaga
 
             switch (GameStates.GameState)
             {
-                case gameState.MainMenu:
+                case GameState.MainMenu:
                 {
-                    _menu.Add(0, menuChoice.StartGame);
-                    _menu.Add(1, menuChoice.Settings);
-                    _menu.Add(2, menuChoice.Exit);
+                    _menu.Add(0, MenuChoice.StartGame);
+                    _menu.Add(1, MenuChoice.Settings);
+                    _menu.Add(2, MenuChoice.Exit);
                     break;
                 }
-                case gameState.Pause:
+                case GameState.Pause:
                 {
-                    _menu.Add(0, menuChoice.Resume);
-                    _menu.Add(1, menuChoice.ExitToMenu);
-                    _menu.Add(2, menuChoice.Exit);
+                    _menu.Add(0, MenuChoice.Resume);
+                    _menu.Add(1, MenuChoice.ExitToMenu);
+                    _menu.Add(2, MenuChoice.Exit);
                     break;
                 }
-                case gameState.GameOver:
+                case GameState.GameOver:
                 {
-                    _menu.Add(0, menuChoice.StartGame);
-                    _menu.Add(1, menuChoice.ExitToMenu);
-                    _menu.Add(2, menuChoice.Exit);
+                    _menu.Add(0, MenuChoice.StartGame);
+                    _menu.Add(1, MenuChoice.ExitToMenu);
+                    _menu.Add(2, MenuChoice.Exit);
                     break;
                 }
             }
@@ -68,9 +68,9 @@ namespace Galaga
             _menu.TryGetValue(CurrentKey, out _currentChoice);
         }
 
-        public static menuChoice CurrentChoice => _currentChoice;
+        public static MenuChoice CurrentChoice => _currentChoice;
 
-        public static Dictionary<int, menuChoice> CurrentMenu => _menu;
+        public static Dictionary<int, MenuChoice> CurrentMenu => _menu;
         public static int CurrentKey { get; private set; }
     }
 }

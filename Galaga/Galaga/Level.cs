@@ -10,23 +10,22 @@ namespace Galaga
     //хранит все объекты игры и обрабатывает их взаимодействие
     public static class Level
     {
-//        private static Background _background;
         private static List<Player> _players;
-        private static Dictionary<int,Moved> _fomations;
         private static List<Enemy> _enemies;
-        private static List<Bullet> _bullets;
-        static Random _randomizer;
-        private static int playersCount = 1;//временно
+//        private static List<Bullet> _bullets;
+//        static Random _randomizer;
+        private static int _playersCount = 1;//временно
 
         static Level()
         {
-//            _background = new Background();
-            _randomizer = new Random();
-
             _players = new List<Player>();
-//            _fomations = //хммм   new Fomations();
             _enemies = new List<Enemy>();
-            _bullets = new List<Bullet>();
+
+//            _background = new Background();
+//            _randomizer = new Random();
+
+//            _fomations = //хммм   new Fomations();
+//            _bullets = new List<Bullet>();
         }
 
         public static void PlayerAction(PlayerAction newAction)
@@ -55,42 +54,7 @@ namespace Galaga
         public static void Render() // переработать и вынести отрисовку в отдельный класс
         {
             //throw new NotImplementedException();
-
-            //            GL.ClearColor(Color4.Black);
-/*            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.MatrixMode(MatrixMode.Modelview);
-
-            if (KeyboardInput.CurrentGameState == gameState.MainMenu)
-            {
-                GL.PushMatrix();
-
-                GL.Translate(0, 0.5, 0);
-                generalText.PrepareToRender("GALAGA");
-                generalText.Render();
-                GL.Translate(0, -0.2, 0);
-                generalText.PrepareToRender("Start game");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.StartGame)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Settings");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.Settings)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Exit");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.Exit)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-
-                GL.PopMatrix();
-            }
+/*          
             if (KeyboardInput.CurrentGameState == gameState.Game || KeyboardInput.CurrentGameState == gameState.GameOver || KeyboardInput.CurrentGameState == gameState.Pause)
             {
                 RenderBackground();
@@ -119,129 +83,38 @@ namespace Galaga
                 }
                 player.RenderLifes();
             }
-            if (KeyboardInput.CurrentGameState == gameState.GameOver)
-            {
-                GL.PushMatrix();
-
-                //isKeyPressed = 0;
-                //                isMovingLeft = false;
-                //                isMovingRight = false;
-                KeyboardInput.PlayerStop();
-
-                GL.Translate(0, 0.5, 0);
-                generalText.PrepareToRender("GAME OVER");
-                generalText.Render();
-                GL.Translate(0, -0.2, 0);
-                generalText.PrepareToRender("Start new game");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.StartGame)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Exit to menu");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.ExitToMenu)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Exit");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.Exit)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-
-                GL.PopMatrix();
-            }
-            if (KeyboardInput.CurrentGameState == gameState.Pause)
-            {
-                GL.PushMatrix();
-
-                //isKeyPressed = 0;
-                //                isMovingLeft = false;
-                //                isMovingRight = false;
-                KeyboardInput.PlayerStop();
-
-                GL.Translate(0, 0.5, 0);
-                generalText.PrepareToRender("PAUSE");
-                generalText.Render();
-                GL.Translate(0, -0.2, 0);
-                generalText.PrepareToRender("Resume");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.Resume)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Exit to menu");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.ExitToMenu)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Exit");
-                generalText.Render();
-                if (KeyboardInput.CurrentMenuChoice == menuChoice.Exit)
-                {
-                    MenuFrameRender(generalText.Size.X / GlobalVariables.GetWindowSize().X, generalText.Size.Y / GlobalVariables.GetWindowSize().Y);
-                }
-
-                GL.PopMatrix();
-            }
-            if (KeyboardInput.CurrentGameState == gameState.Settings)
-            {
-                GL.PushMatrix();
-
-                //isKeyPressed = 0;
-                //                isMovingLeft = false;
-                //                isMovingRight = false;
-                KeyboardInput.PlayerStop();
-
-                GL.Translate(0, 0.5, 0);
-                generalText.PrepareToRender("Settings");
-                generalText.Render();
-                GL.Translate(0, -0.3, 0);
-                generalText.PrepareToRender("Work in progress.");
-                generalText.Render();
-                GL.Translate(0, -0.1, 0);
-                generalText.PrepareToRender("Please press Escape to back to menu.");
-                generalText.Render();
-                GL.PopMatrix();
-            }
-
-            SwapBuffers();*/
+            
+            */
         }
 
         private static void Load()
         {
-            _fomations.Clear();
             _enemies.Clear();
-            _bullets.Clear();
             _players.Clear();
 
-            for (int i = 0; i < playersCount; i++)
+//            _fomations.Clear();
+//            _bullets.Clear();
+
+            for (int i = 0; i < _playersCount; i++)
                 _players.Add(new Player());
 
             for (int i=0;i<10;i++)
-            _enemies.Add(new Enemy(0,new Vector2(i-5,3)));//ооочень тестовый вариант
+                _enemies.Add(new Enemy(0,new Vector2(i-5,3)));//ооочень тестовый вариант
         }
 
         public static void Update()   //переписать вообще целиком
         {
 //            KeyboardInput.MenuChanger();
-            if (GameStates.GameState == gameState.StartNewGame)
+            if (GameStates.GameState == GameState.LevelLoad)
             {
                 Load();
                 //KeyboardInput.CurrentGameState = gameState.Game;
                 GameStates.LevelStateChanger();
                 return;
             }
-            if (GameStates.GameState == gameState.Game)
+            if (GameStates.GameState == GameState.Game)
             {
-                GlobalVariables.isAllMoving = true;
+//                WindowProperty.isAllMoving = true;
 
                 //нафиг отсюда обработку входящих действий игрока, тут только обновление его состояний
                 foreach (Player player in _players)
@@ -391,11 +264,16 @@ namespace Galaga
                 }*/
 //                score.PrepareToRender(player.GetScore().ToString());
             }
-            if (GameStates.GameState == gameState.Exit)
+            if (GameStates.GameState == GameState.Exit)
             {
-                GlobalVariables.ShootFlagNeg();
-//                Exit();
+//                WindowProperty.ShootFlagNeg();
             }
         }
+
+        public static List<Enemy> Enemies => _enemies;
+
+        public static List<Player> Players => _players;
+
+//        public static List<Bullet> Bullets => _bullets;
     }
 }

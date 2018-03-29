@@ -62,7 +62,7 @@ namespace Galaga
         }
         public void DrawString(Brush brush, PointF point)
         {
-            if (_text == "" || _text == null) return;
+            if (string.IsNullOrEmpty(_text)) return;
 
             _gfx.DrawString(_text, _font, brush, point);
         }
@@ -90,13 +90,8 @@ namespace Galaga
                 _text = value;
             }
         }
-        public Vector2 Size
-        {
-            get
-            {
-                return new Vector2(_width, _height);
-            }
-        }
+        public Vector2 Size => new Vector2(_width, _height);
+
         void UploadBitmap()
         {
             if (_rectGfx != RectangleF.Empty)
@@ -170,10 +165,10 @@ namespace Galaga
             GL.BindTexture(TextureTarget.Texture2D, Texture);
             GL.PushMatrix();
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(0.0f, 1.0f); GL.Vertex2(-(Size.X / GlobalVariables.GetWindowSize().X), -(Size.Y / GlobalVariables.GetWindowSize().Y));
-            GL.TexCoord2(1.0f, 1.0f); GL.Vertex2((Size.X / GlobalVariables.GetWindowSize().X), -(Size.Y / GlobalVariables.GetWindowSize().Y));
-            GL.TexCoord2(1.0f, 0.0f); GL.Vertex2((Size.X / GlobalVariables.GetWindowSize().X), (Size.Y / GlobalVariables.GetWindowSize().Y));
-            GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-(Size.X / GlobalVariables.GetWindowSize().X), (Size.Y / GlobalVariables.GetWindowSize().Y));
+            GL.TexCoord2(0.0f, 1.0f); GL.Vertex2(-(Size.X / WindowProperty.WindowSize.X), -(Size.Y / WindowProperty.WindowSize.Y));
+            GL.TexCoord2(1.0f, 1.0f); GL.Vertex2((Size.X / WindowProperty.WindowSize.X), -(Size.Y / WindowProperty.WindowSize.Y));
+            GL.TexCoord2(1.0f, 0.0f); GL.Vertex2((Size.X / WindowProperty.WindowSize.X), (Size.Y / WindowProperty.WindowSize.Y));
+            GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-(Size.X / WindowProperty.WindowSize.X), (Size.Y / WindowProperty.WindowSize.Y));
             GL.End();
             GL.PopMatrix();
         }

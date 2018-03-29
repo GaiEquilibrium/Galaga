@@ -1,30 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using OpenTK;
+﻿using OpenTK;
 
 namespace Galaga
 {
     //отвечает за выстрел, когда он виден и активен
     //по сути, только методы на проверки столкновений (и возможно собственно методы уничтожения)
-    class Bullet : Moved
+    public class Bullet : Moved
     {
-        private bool owner; //true - player, false - enemy
+        public bool IsComplete { get; private set; }
 
-        public Bullet(Vector2 startPosition, bool newOwner)
+        public Bullet(Vector2 startPosition, Belonging newOwner)
         {
             position = startPosition;
-            owner = newOwner;
-            if (newOwner) velocity.Y = 0.8F;
-            else velocity.Y = -0.8F;
+            Belonging = newOwner;
+            if (Belonging == Belonging.Player) velocity.Y = 0.8F;
+            else if (Belonging == Belonging.Enemy) velocity.Y = -0.8F;
+            else
+            {
+                velocity.Y = 0;
+                position.Y = 20;
+            }
         }
-        public bool IsPlayerOwner() { return owner; }
-        public void RenderObject()
+
+        public new void Moving()
         {
-//            RenderObject(-1);
+            base.Moving();
+            if (position.Y > 10 || position.Y < -10) IsComplete = true;
         }
     }
 }
