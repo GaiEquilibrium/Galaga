@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Galaga
@@ -80,6 +81,7 @@ namespace Galaga
 
         public static void Render(Moved renderedObject)
         {
+            GL.Color4(Color4.White);
             GL.Translate(renderedObject.Position.X * WindowProperty.ObjectSize / WindowProperty.WindowSize.X, renderedObject.Position.Y * WindowProperty.ObjectSize / WindowProperty.WindowSize.Y, 0);
             switch (renderedObject.GameObject)
             {
@@ -112,10 +114,7 @@ namespace Galaga
                 }
                 case GameObject.Enemy:
                 {
-                    //int enemyType = renderedObject.State / 2;
-                    //int enemyState = renderedObject.State % 2;
-                    //тут получается сложность именно в корректном добавлении текстур, а дальше просто считывается состояние
-                    _enemies[renderedObject.State].Bind();   //получается, что тут всё
+                    _enemies[renderedObject.State].Bind();
                     break;
                 }
                 case GameObject.Star:
