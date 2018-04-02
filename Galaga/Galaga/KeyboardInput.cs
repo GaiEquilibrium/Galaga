@@ -72,6 +72,11 @@ namespace Galaga
                     }
                 }
             }
+            else
+            {
+                if (e.Key == Key.Escape || e.Key == Key.Enter)
+                    GameStates.KeyboardStateChanger();
+            }
         }
         public static void KeyUp(object sender, KeyboardKeyEventArgs e)
         {

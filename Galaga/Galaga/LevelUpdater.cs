@@ -4,6 +4,8 @@ namespace Galaga
 {
     static class LevelUpdater
     {
+        private static bool _completeCheck = false; //проверка завершённостей циклов проверки
+        private static bool _hitCheck = false;
         public static void Update()
         {
             //нафиг отсюда обработку входящих действий игрока, тут только обновление его состояний
@@ -12,10 +14,73 @@ namespace Galaga
 //            {
 //                enemy.Moving();
 //            }
+            foreach (KeyValuePair<int, Player> player in Level.Players) { player.Value.Update(); }
+
+            while (!_completeCheck)
+            {
+                _completeCheck = true;
+                foreach (Bullet bullet in Level.Bullets)
+                {
+                    if (bullet.IsComplete)
+                    {
+                        Level.Bullets.Remove(bullet);
+                        _completeCheck = false;
+                        break;
+                    }
+                    _completeCheck = true;
+                }
+            }
+            foreach (Bullet bullet in Level.Bullets) { bullet.Update(); }
             foreach (KeyValuePair<int, Player> player in Level.Players)
             {
-                player.Value.Update();
+                Bullet shoot = null;
+                if (player.Value.WantShoot) shoot = player.Value.Shoot();
+                if (shoot != null) Level.Bullets.Add(shoot);
             }
+
+            //проверка попаданий
+            _completeCheck = false;
+            while (!_completeCheck)
+            {
+                _completeCheck = false;
+                foreach (Bullet bullet in Level.Bullets)
+                {
+                    foreach (Enemy enemy in Level.Enemies)
+                    {
+                        if (enemy.IsHit(bullet))
+                        {
+                            Level.Players[bullet.PlayerId].AddToScore(enemy.Cost);
+                            Level.Enemies.Remove(enemy);
+                            bullet.IsComplete = true;
+                            Level.Bullets.Remove(bullet);
+                            //                            blastList.Add(new Blast(GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset(), false));
+                            _hitCheck = true;
+                            break;
+                        }
+                    }
+                    if (_hitCheck) break;
+                    foreach (KeyValuePair<int, Player> player in Level.Players)
+                    {
+                        if (player.Value.IsHit(bullet))
+                        {
+//                            blastList.Add(new Blast(player.GetPos(), true)); //не менять положение
+                            player.Value.Reset();
+                            if (player.Value.LifeNum <= 0)
+                            {
+                                GameStates.LevelStateChanger();//для одиночного варианта так
+                                Level.Players.Remove(player.Key);
+                            }
+                            bullet.IsComplete = true;
+                            Level.Bullets.Remove(bullet);
+                            _hitCheck = true;
+                        }
+                    }
+                    if (_hitCheck) break;
+                }
+                if (_hitCheck) _hitCheck = false;
+                else _completeCheck = true;
+            }
+
 
             //                WindowProperty.isAllMoving = true;
 
@@ -23,65 +88,9 @@ namespace Galaga
             //переделать (и вообще избавиться от GlobalVariables)
             //                GlobalVariables.MoveCenterEnemyPosition();
 
-            //                foreach (Bullet bullet in _bullets) { bullet.Moving(); }
 
             //немного хитрая проверка попадания, надо будет проверить, не ли варианта лучше
-            //                bool tmpIsHit = false;
-            //                bool tmpIsAll = false;
-            /*                while (!tmpIsAll)
-                            {
-                                foreach (Bullet bullet in _bullets)
-                                {
-                                    foreach (Enemy enemy in _enemies)
-                                    {
-                                        if (!enemy.GetIsMoving() && IsHit(bullet.GetPos(), (GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset()), false, bullet.IsPlayerOwner()))
-                                        {
-                                            player.AddToScore(enemy.GetCost());
-                                            _enemies.Remove(enemy);
-                                            _bullets.Remove(bullet);
-                                            blastList.Add(new Blast(GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset(), false));
-                                            tmpIsHit = true;
-                                            break;
-                                        }
-                                        if (enemy.GetIsMoving() && IsHit(bullet.GetPos(), enemy.GetPos(), false, bullet.IsPlayerOwner()))
-                                        {
-                                            player.AddToScore(enemy.GetCost());
-                                            _enemies.Remove(enemy);
-                                            _bullets.Remove(bullet);
-                                            blastList.Add(new Blast(enemy.GetPos(), false));
-                                            tmpIsHit = true;
-                                            break;
-                                        }
-                                    }
-                                    if (IsHit(bullet.GetPos(), player.GetPos(), true, bullet.IsPlayerOwner()))
-                                    {
-                                        blastList.Add(new Blast(player.GetPos(), true));//не менять положение
-                                        player.Reset();
-                                        if (player.GetLifeNum() <= 0) KeyboardInput.CurrentGameState = gameState.GameOver;
-                                        _bullets.Remove(bullet);
-                                        tmpIsHit = true;
-                                    }
-                                    if (tmpIsHit) break;
-                                }
-                                if (tmpIsHit) tmpIsHit = false;
-                                else tmpIsAll = true;
-                            }*/
-
-            /*                tmpIsAll = false;
-                            player.CanShoot = true;
-                            while (!tmpIsAll)
-                            {
-                                foreach (Bullet bullet in _bullets)
-                                {
-                                    if (bullet.GetPos().Y > 11 || bullet.GetPos().Y < -11)
-                                    {
-                                        _bullets.Remove(bullet);
-                                        break;
-                                    }
-                                    if (bullet.GetVel().Y > 0) player.CanShoot = false;
-                                }
-                                tmpIsAll = true;
-                            }*/
+            //                
 
             //      !не перемещать ниже !
             /*                foreach (Enemy enemy in _enemies)

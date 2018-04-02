@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
@@ -137,6 +138,63 @@ namespace Galaga
             GL.Translate(-renderedObject.Position.X * WindowProperty.ObjectSize / WindowProperty.WindowSize.X, -renderedObject.Position.Y * WindowProperty.ObjectSize / WindowProperty.WindowSize.Y, 0);
 
             renderedObject.Counter++;
+        }
+        public static void Render(Vector2 position, int state, Belonging belonging, GameObject gameObject)
+        {
+            GL.Color4(Color4.White);
+            GL.Translate(position.X * WindowProperty.ObjectSize / WindowProperty.WindowSize.X, position.Y * WindowProperty.ObjectSize / WindowProperty.WindowSize.Y, 0);
+            switch (gameObject)
+            {
+                case GameObject.Player:
+                    {
+                        _player.Bind();
+                        break;
+                    }
+                case GameObject.Blast:
+                    {
+                        if (belonging == Belonging.Enemy)
+                        {
+                            _enemyBlast[state].Bind();
+                        }
+                        else if (belonging == Belonging.Player)
+                        {
+                            _enemyBlast[state].Bind();
+                        }
+                        break;
+                    }
+                case GameObject.Boss:
+                    {
+                        _boss[state].Bind();
+                        break;
+                    }
+                case GameObject.Bullet:
+                    {
+                        _bullet.Bind();
+                        break;
+                    }
+                case GameObject.Enemy:
+                    {
+                        _enemies[state].Bind();
+                        break;
+                    }
+                case GameObject.Star:
+                    {
+                        _star[state].Bind();
+                        break;
+                    }
+            }
+            GL.Begin(BeginMode.Quads);
+            GL.TexCoord2(1, 1);
+            GL.Vertex2(-WindowProperty.GlObjectSize.X / 2, -WindowProperty.GlObjectSize.Y / 2);
+            GL.TexCoord2(0, 1);
+            GL.Vertex2(WindowProperty.GlObjectSize.X / 2, -WindowProperty.GlObjectSize.Y / 2);
+            GL.TexCoord2(0, 0);
+            GL.Vertex2(WindowProperty.GlObjectSize.X / 2, WindowProperty.GlObjectSize.Y / 2);
+            GL.TexCoord2(1, 0);
+            GL.Vertex2(-WindowProperty.GlObjectSize.X / 2, WindowProperty.GlObjectSize.Y / 2);
+            GL.End();
+
+            GL.Translate(-position.X * WindowProperty.ObjectSize / WindowProperty.WindowSize.X, -position.Y * WindowProperty.ObjectSize / WindowProperty.WindowSize.Y, 0);
         }
     }
 }

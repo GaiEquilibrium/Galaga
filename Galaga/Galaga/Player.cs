@@ -8,7 +8,7 @@ namespace Galaga
     {
         public int LifeNum { get; private set; }
         public int Score { get; private set; }
-        public bool CanShoot;
+        public int Shoots;
         public bool WantShoot { get; private set; }
         public int PlayerId { get; }
 
@@ -21,7 +21,7 @@ namespace Galaga
             Score = 0;
             GameObject = GameObject.Player;
             Belonging = Belonging.Player;
-            CanShoot = true;
+            Shoots = 2;
             WantShoot = false;
         }
         public void ReduceLifeNum() { LifeNum--; }
@@ -57,6 +57,8 @@ namespace Galaga
         {
 //            SoundMaster.Shoot();
             WantShoot = false;
+            if (Shoots <= 0) return null;
+            Shoots--;
             Vector2 tmpPos = Position;
             tmpPos.Y++;
             return new Bullet(tmpPos,Belonging.Player,PlayerId);
@@ -72,11 +74,11 @@ namespace Galaga
         public void RenderLifes()//подумать над более удобным вариантом
         {
             Vector2 tmpPos;
-            tmpPos.X = -10;
-            tmpPos.Y = -14;
+            tmpPos.X = -9.5F;
+            tmpPos.Y = -13.5F + PlayerId;
             for (int i = 1; i < LifeNum; i++)
             {
-//                textures.RenderObject(tmpPos, textures.GetEnemyTypeNum(),velocity,0);
+                Textures.Render(tmpPos,0,Belonging.Player,GameObject.Player);
                 tmpPos.X++;
             }
         }

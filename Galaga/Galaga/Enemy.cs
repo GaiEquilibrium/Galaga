@@ -115,6 +115,14 @@ namespace Galaga
 
         public int Formation => formation;
 
+        public new Vector2 Position
+        {
+            get
+            {
+                return position;    //пока что так, просто для того, что бы была возможность потом переписать на возможность возвращения позиции сразу из строя
+            }
+        }
+
 //        public int GetCostPeLvl() { return costPerLvl; }
     }
 }
