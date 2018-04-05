@@ -10,10 +10,10 @@ namespace Galaga
         {
             //нафиг отсюда обработку входящих действий игрока, тут только обновление его состояний
 
-//            foreach (Enemy enemy in _enemies)
-//            {
-//                enemy.Moving();
-//            }
+            foreach (var enemy in Level.Enemies)
+            {
+                enemy.Value.Update();
+            }
             foreach (KeyValuePair<int, Player> player in Level.Players) { player.Value.Update(); }
 
             while (!_completeCheck)
@@ -31,6 +31,10 @@ namespace Galaga
                 }
             }
             foreach (Bullet bullet in Level.Bullets) { bullet.Update(); }
+            Level.MainFormation.Update();
+
+
+            //стрельба игрока
             foreach (KeyValuePair<int, Player> player in Level.Players)
             {
                 Bullet shoot = null;
@@ -45,12 +49,13 @@ namespace Galaga
                 _completeCheck = false;
                 foreach (Bullet bullet in Level.Bullets)
                 {
-                    foreach (Enemy enemy in Level.Enemies)
+                    foreach (var enemy in Level.Enemies)
                     {
-                        if (enemy.IsHit(bullet))
+                        if (enemy.Value.IsHit(bullet))
                         {
-                            Level.Players[bullet.PlayerId].AddToScore(enemy.Cost);
-                            Level.Enemies.Remove(enemy);
+                            Level.Players[bullet.PlayerId].AddToScore(enemy.Value.Cost);
+                            Level.MainFormation.Remove(enemy.Value);
+                            Level.Enemies.Remove(enemy.Key);
                             bullet.IsComplete = true;
                             Level.Bullets.Remove(bullet);
                             //                            blastList.Add(new Blast(GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset(), false));

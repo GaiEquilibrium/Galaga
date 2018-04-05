@@ -11,9 +11,9 @@ namespace Galaga
                 player.Value.Render();
                 player.Value.RenderLifes();
             }
-            foreach (Enemy enemy in Level.Enemies)
+            foreach (var enemy in Level.Enemies)
             {
-                enemy.Render();
+                enemy.Value.Render();
             }
             foreach (Bullet bullet in Level.Bullets)
             {

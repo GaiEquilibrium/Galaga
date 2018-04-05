@@ -4,12 +4,13 @@ namespace Galaga
 {
     public class Enemy : Ship
     {
-        protected Vector2 offset; //formation start in bottom left corner
         protected int cost;
         protected bool isMoving;
         protected bool movingEnd;
+        public Vector2 MainFormationOffset; //formation start in bottom left corner
+        public Vector2 SubFormationOffset;
+        public int EnemyId { get; }
 
-        protected int formation;
 //написать более толковую систему анимации
 //        private int stage;
 //        public const int maxStage = 4;
@@ -23,9 +24,13 @@ namespace Galaga
             velocity.Y = 0;
 
             isMoving = false;
+            Belonging = Belonging.Enemy;
+
+            SubFormationOffset.X = -1;
+            SubFormationOffset.Y = -1;
         }
 
-        public Enemy(int newCost, Vector2 startPosition)
+        public Enemy(int id, int newCost, Vector2 startPosition, Vector2 formationOffset)
         {
             cost = newCost;
 
@@ -39,24 +44,28 @@ namespace Galaga
             Belonging = Belonging.Enemy;
             State = 0;  //временно
 
+            SubFormationOffset.X = -1;
+            SubFormationOffset.Y = -1;
+
+            MainFormationOffset = formationOffset;
+            EnemyId = id;
         }
 
-        public void ChangeFormation(int newFormation, Vector2 newOffset)
+        public void ChangeFormation(Vector2 newOffset)
         {
-            formation = newFormation;
-            offset = newOffset;
+            SubFormationOffset = newOffset;
         }
 
         public void StartMove(Vector2 formationPosition)
         {
 //            position = GlobalVariables.GetCenterEnemyPosition() + centerOffset;
 //заменить на считывание позиции у текущего строя
-            position = offset + formationPosition;
-            velocity.Y = 0.3F;
-            if (offset.X > 0) velocity.X = 0.4F;
-            if (offset.X < 0) velocity.X = -0.4F;
-            isMoving = true;
-            movingEnd = false;
+//            position = offset + formationPosition;
+//            velocity.Y = 0.3F;
+//            if (offset.X > 0) velocity.X = 0.4F;
+//            if (offset.X < 0) velocity.X = -0.4F;
+//            isMoving = true;
+//            movingEnd = false;
         }
 
         public void StartMove(int newSubFormation) //хммм
@@ -99,6 +108,16 @@ namespace Galaga
             }*/
         }
 
+        public new void Update()
+        {
+            if (!isMoving)
+            {
+                if (!InSubFormation) position = Level.MainFormation.Position + MainFormationOffset;
+//                else //а вот пока что хз как =\
+            }
+            else Moving();
+        }
+
         public Bullet Shoot()
         {
 //            SoundMaster.Shoot();//надо будет так же несколько переделать работу со звуком
@@ -107,22 +126,13 @@ namespace Galaga
             return new Bullet(tmpPos, Belonging.Enemy,-1);
         }
 
-        public Vector2 Offset => offset;
+        private Vector2 FormationOffset => InSubFormation ? SubFormationOffset : MainFormationOffset;
+
+        public bool InSubFormation => SubFormationOffset.X >= 0;
 
         public int Cost => cost;
 
         public bool IsMoving => isMoving;
 
-        public int Formation => formation;
-
-        public new Vector2 Position
-        {
-            get
-            {
-                return position;    //пока что так, просто для того, что бы была возможность потом переписать на возможность возвращения позиции сразу из строя
-            }
-        }
-
-//        public int GetCostPeLvl() { return costPerLvl; }
     }
 }
