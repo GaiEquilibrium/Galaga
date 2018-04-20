@@ -37,11 +37,19 @@ namespace Galaga
                 KeyboardInput.SetPlayerId(tmpPlayer.PlayerId);
             }
 
-            for (int i = 0; i < 10; i++)
-            {
-                Enemy tmpEnemy = new Enemy(EnemyId,0, new Vector2(i - 5, 3), new Vector2(i, 0));
-                Enemies.Add(tmpEnemy.EnemyId,tmpEnemy);
-            }
+//            for (int i = 0; i < 10; i++)
+//            {
+//                Enemy tmpEnemy = new Enemy(EnemyId,0, new Vector2(i - 5, 3), new Vector2(i, 0));
+//                Enemies.Add(tmpEnemy.EnemyId,tmpEnemy);
+//            }
+//            for (int i = 0; i < 10; i++)
+//            {
+//                Enemy tmpEnemy = new Enemy(EnemyId, 0, new Vector2(i - 5, 4), new Vector2(i, 1));
+//                Enemies.Add(tmpEnemy.EnemyId, tmpEnemy);
+//            }
+
+            Enemy tmpEnemy = new Enemy(EnemyId,new Vector2(0,5), Vector2.Zero, "Bee");
+            Enemies.Add(tmpEnemy.EnemyId,tmpEnemy);
 
             MainFormation = new Formation(Enemies);
         }

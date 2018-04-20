@@ -1,129 +1,314 @@
-﻿using OpenTK;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using OpenTK;
 
 namespace Galaga
 {
+    public enum OnLevelStates
+    {
+        LevelStart,
+        MovingStart,
+        Moving,
+        MovingEnd,
+        MovingInFormation,
+        InMainFormation,
+    }
+
     public class Enemy : Ship
     {
+        #region variables
         protected int cost;
-        protected bool isMoving;
-        protected bool movingEnd;
+        protected OnLevelStates InGameState;
+        protected static float MaxSpeed = 0.3F;
         public Vector2 MainFormationOffset; //formation start in bottom left corner
         public Vector2 SubFormationOffset;
         public int EnemyId { get; }
+        private Dictionary<Vector2, bool> waypoints; //is moving aroud, and point
+        protected static String SettingsFile = @"Settings/enemies.txt";
+        protected Dictionary<Vector2, bool>.Enumerator Enumerator;
+        protected KeyValuePair<Vector2, bool> currentWaypoint;
+        protected bool waypointsNotEnd;
 
-//написать более толковую систему анимации
-//        private int stage;
-//        public const int maxStage = 4;
-//        public const int frameToStage = 20;
+        //написать более толковую систему анимации
+        //        private int stage;
+        //        public const int maxStage = 4;
+        //        public const int frameToStage = 20;
 
+        #endregion
+
+        #region constructors
         public Enemy()
         {
             cost = 0;
-            
+
             velocity.X = 0;
             velocity.Y = 0;
 
-            isMoving = false;
+            InGameState = OnLevelStates.LevelStart;
             Belonging = Belonging.Enemy;
 
             SubFormationOffset.X = -1;
             SubFormationOffset.Y = -1;
+
+            waypoints = new Dictionary<Vector2, bool>();
         }
 
-        public Enemy(int id, int newCost, Vector2 startPosition, Vector2 formationOffset)
+        public Enemy(int id, Vector2 startPosition, Vector2 formationOffset, String enemyType)
         {
-            cost = newCost;
-
             velocity.X = 0;
             velocity.Y = 0;
 
-            isMoving = false;
+            InGameState = OnLevelStates.LevelStart;
 
-            position = startPosition; //временная мера
             GameObject = GameObject.Enemy;
             Belonging = Belonging.Enemy;
-            State = 0;  //временно
 
             SubFormationOffset.X = -1;
             SubFormationOffset.Y = -1;
 
             MainFormationOffset = formationOffset;
             EnemyId = id;
+
+            waypoints = new Dictionary<Vector2, bool>();
+            using (StreamReader sr = File.OpenText(SettingsFile))
+            {
+                String readedString;
+                while ((readedString = sr.ReadLine()) != null)
+                {
+                    if (enemyType == readedString)
+                    {
+                        String tmpDataString;
+                        if ((tmpDataString = sr.ReadLine()) == null) break;
+                        State = int.Parse(tmpDataString.Substring(tmpDataString.IndexOf(' ')));
+
+                        if ((tmpDataString = sr.ReadLine()) == null) break;
+                        cost = int.Parse(tmpDataString.Substring(tmpDataString.IndexOf(' ')));
+
+                        //if ((tmpDataString = sr.ReadLine()) == null) break;
+                        //position = new Vector2(
+                        //    Convert.ToSingle(tmpDataString.Substring(tmpDataString.IndexOf('x') + 1,
+                        //        tmpDataString.LastIndexOf(' ') - tmpDataString.IndexOf('x'))),
+                        //    Convert.ToSingle(tmpDataString.Substring(tmpDataString.IndexOf('y') + 1)));
+                        //позиция будет читаться из другого файла
+
+                        position = startPosition;
+                        break;
+
+                    }
+                }
+            }
+            waypoints.Add(new Vector2(2, 5), true);
+            waypoints.Add(new Vector2(2, -5), false);
+
+            //надо разобраться с тем, как с этим работать =\
+            //https://msdn.microsoft.com/ru-ru/library/k3z2hhax(v=vs.110).aspx
+            //var test = waypoints.GetEnumerator();
+        }
+        #endregion
+
+        #region Updaters
+        public new void Update()
+        {
+            switch (InGameState)
+            {
+                case OnLevelStates.LevelStart:
+                {
+                    StateChanger();
+                    break;
+                }
+                case OnLevelStates.MovingStart:
+                {
+                    break;
+                }
+                case OnLevelStates.InMainFormation:
+                {
+                    position = Level.MainFormation.Position + MainFormationOffset;
+                    StateChanger();//надо придумать проверку на возможность вылета
+                    break;
+                }
+                case OnLevelStates.Moving:
+                {
+                    Moving();
+                    break;
+                }
+                case OnLevelStates.MovingEnd:
+                {
+                    Moving();
+                    break;
+                }
+                case OnLevelStates.MovingInFormation:
+                {
+                    break;
+                }
+            }
+        }
+
+        private void StateChanger()
+        {
+            switch (InGameState)
+            {
+                case OnLevelStates.LevelStart:
+                {
+                    InGameState = OnLevelStates.InMainFormation; //временно
+                    break;
+                }
+                case OnLevelStates.MovingStart:
+                {
+                    break;
+                }
+                case OnLevelStates.InMainFormation:
+                {
+                    velocity = new Vector2(0, MaxSpeed);
+                    Enumerator = waypoints.GetEnumerator();
+                    waypointsNotEnd = Enumerator.MoveNext();
+                    currentWaypoint = Enumerator.Current;
+                    waypointsNotEnd = Enumerator.MoveNext();
+                    InGameState = OnLevelStates.Moving;
+                    break;
+                }
+                case OnLevelStates.Moving:
+                {
+                    Enumerator.Dispose();
+                    InGameState = OnLevelStates.MovingEnd;
+                    break;
+                }
+                case OnLevelStates.MovingEnd:
+                {
+                    InGameState = OnLevelStates.InMainFormation;    //временно, так как должена быть более разумная смена состояния
+                    break;
+                }
+                case OnLevelStates.MovingInFormation:
+                {
+                    break;
+                }
+            }
         }
 
         public void ChangeFormation(Vector2 newOffset)
         {
             SubFormationOffset = newOffset;
         }
+        #endregion
 
-        public void StartMove(Vector2 formationPosition)
+        #region MovingFunctions
+        //velocity must be equal to 0.3    
+        protected new void Moving()
         {
-//            position = GlobalVariables.GetCenterEnemyPosition() + centerOffset;
-//заменить на считывание позиции у текущего строя
-//            position = offset + formationPosition;
-//            velocity.Y = 0.3F;
-//            if (offset.X > 0) velocity.X = 0.4F;
-//            if (offset.X < 0) velocity.X = -0.4F;
-//            isMoving = true;
-//            movingEnd = false;
-        }
-
-        public void StartMove(int newSubFormation) //хммм
-        {
-//            position = GlobalVariables.GetCenterEnemyPosition() + centerOffset;
-            velocity.Y = 0.3F;
-            if (newSubFormation > 0) velocity.X = 0.4F;
-            if (newSubFormation < 0) velocity.X = -0.4F;
-//            subFormation = newSubFormation;
-            isMoving = true;
-            movingEnd = false;
-        }
-
-        public void Moving(Vector2 PlayerPosition) //вообще переписать 
-        {
-/*            position += velocity;
-            if (velocity.Y > -0.1) velocity.Y -= 0.02F;
-            if (!movingEnd)
+            switch (InGameState)
             {
-                if (PlayerPosition.X > position.X && velocity.X < 0.4) velocity.X += 0.02F;
-                if (PlayerPosition.X < position.X && velocity.X > -0.4) velocity.X -= 0.02F;
+                case OnLevelStates.Moving:
+                {
+                    if (waypointsNotEnd)
+                    {
+                        if (currentWaypoint.Value)
+                            MoveAround(currentWaypoint.Key);
+                        else
+                            MoveTo(currentWaypoint.Key);
+                        break;
+                    }
+                    if (currentWaypoint.Value)
+                        MoveAround(currentWaypoint.Key);
+                    else
+                        MoveTo(currentWaypoint.Key);
+                    break;
+                }
+                case OnLevelStates.MovingEnd:
+                {
+                    MoveToMainFormation();
+                    break;
+                }
+                default:
+                    break;
             }
-            if (position.Y < -7)
-            {
-                movingEnd = true;
-//                subFormation = 0;
-                position.Y = 11;
-//                velocity.X = 0;
-            }
-            if (WindowProperty.isAllMoving) movingEnd = false; //проверить, возможно ли прикрутить сюда, 
-            //что бы в конце игры удалялись дорогие противники (можно если возвращать, к примеру bool)
-
-//            if (movingEnd ) position.X = GlobalVariables.GetCenterEnemyPosition().X + centerOffset.X;
-//            if (movingEnd && position.Y <= GlobalVariables.GetCenterEnemyPosition().Y + centerOffset.Y)
-            {
-                velocity.X = 0;
-                velocity.Y = 0;
-                isMoving = false;
-                movingEnd = false;
-            }*/
         }
 
-        public new void Update()
+        private void MoveTo(Vector2 point)
         {
-            if (!isMoving)
+            Vector2 unitVelocity = (point - position) /
+                                   (float)Math.Sqrt((point.X - position.X) * (point.X - position.X) +
+                                                     (point.Y - position.Y) * (point.Y - position.Y)) * MaxSpeed;
+            velocity = unitVelocity;
+            base.Moving();
+
+            if (Math.Abs(Position.X - currentWaypoint.Key.X) < 0.2 &&
+                Math.Abs(Position.Y - currentWaypoint.Key.Y) < 0.2)
             {
-                if (!InSubFormation) position = Level.MainFormation.Position + MainFormationOffset;
-//                else //а вот пока что хз как =\
+                if (waypointsNotEnd)
+                {
+                    currentWaypoint = Enumerator.Current;
+                    waypointsNotEnd = Enumerator.MoveNext();
+                }
+                else
+                {
+                    StateChanger();
+                }
             }
-            else Moving();
         }
+
+        private void MoveAround(Vector2 point)
+        {
+            float radius = (float)Math.Sqrt((point.X - position.X) * (point.X - position.X) +
+                                             (point.Y - position.Y) * (point.Y - position.Y));
+            float angularVelocity = MaxSpeed / radius;
+            Vector2 unitVector = (point - position) / radius;
+            Vector2 acceleration = MaxSpeed * angularVelocity * unitVector;
+            velocity += acceleration;
+            base.Moving();
+
+            float direction;
+            if (Velocity.X != 0)
+            {
+                direction = (float)Math.Atan2(Velocity.Y, Velocity.X);
+            }
+            else
+            {
+                if (Velocity.Y > 0)
+                {
+                    direction = (float)Math.PI / 2;
+                }
+                else
+                {
+                    direction = (float)-Math.PI / 2;
+                }
+            }
+
+            if (waypointsNotEnd && Math.Abs(direction - DirectionCalc(position, Enumerator.Current.Key)) < 0.15)
+            {
+                currentWaypoint = Enumerator.Current;
+                waypointsNotEnd = Enumerator.MoveNext();
+            }
+            else if (!waypointsNotEnd && Math.Abs(direction - DirectionCalc(position, Level.MainFormation.Position + MainFormationOffset)) < 0.15)
+            {
+                StateChanger();
+            }
+        }
+
+        private void MoveToMainFormation()
+        {
+            Vector2 moveToPoint = Level.MainFormation.Position + MainFormationOffset;
+            Vector2 unitVelocity = (moveToPoint - position) /
+                                   (float)Math.Sqrt((moveToPoint.X - position.X) * (moveToPoint.X - position.X) +
+                                                     (moveToPoint.Y - position.Y) * (moveToPoint.Y - position.Y)) * MaxSpeed;
+            velocity = unitVelocity;
+            base.Moving();
+
+            if (Math.Abs(Position.X - moveToPoint.X) < 0.2 &&
+                Math.Abs(Position.Y - moveToPoint.Y) < 0.2)
+            {
+                StateChanger();
+            }
+        }
+
+        public bool IsMoving => OnLevelStates.Moving == InGameState;
+        #endregion
 
         public Bullet Shoot()
         {
 //            SoundMaster.Shoot();//надо будет так же несколько переделать работу со звуком
             Vector2 tmpPos = position;
             tmpPos.Y--;
-            return new Bullet(tmpPos, Belonging.Enemy,-1);
+            return new Bullet(tmpPos, Belonging.Enemy, -1);
         }
 
         private Vector2 FormationOffset => InSubFormation ? SubFormationOffset : MainFormationOffset;
@@ -131,8 +316,5 @@ namespace Galaga
         public bool InSubFormation => SubFormationOffset.X >= 0;
 
         public int Cost => cost;
-
-        public bool IsMoving => isMoving;
-
     }
 }

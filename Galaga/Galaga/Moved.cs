@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using System;
+using OpenTK;
 
 namespace Galaga
 {
@@ -39,6 +40,46 @@ namespace Galaga
         public void Update()
         {
             Moving();
+        }
+
+        //calculation direction in radians
+        public float DirectionCalc(Vector2 startPoint, Vector2 endPoint)
+        {
+            Vector2 difference = endPoint - startPoint;
+            if (difference.X != 0)
+            {
+                return (float)Math.Atan2(difference.Y, difference.X);
+            }
+            else
+            {
+                if (difference.Y > 0)
+                {
+                    return (float)Math.PI / 2;
+                }
+                else
+                {
+                    return (float)-Math.PI / 2;
+                }
+            }
+        }
+        //same, but use velocity to calculations
+        public float DirectionCalc()
+        {
+            if (Velocity.X != 0)
+            {
+                return (float)Math.Atan2(Velocity.Y, Velocity.X);
+            }
+            else
+            {
+                if (Velocity.Y > 0)
+                {
+                    return (float)Math.PI / 2;
+                }
+                else
+                {
+                    return (float)-Math.PI / 2;
+                }
+            }
         }
     }
 }

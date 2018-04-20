@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+//bug - при попадании по противнику, строй на короткое время прерывает движение
+
 namespace Galaga
 {
     static class LevelUpdater
@@ -31,7 +33,7 @@ namespace Galaga
                 }
             }
             foreach (Bullet bullet in Level.Bullets) { bullet.Update(); }
-            Level.MainFormation.Update();
+//            Level.MainFormation.Update();
 
 
             //стрельба игрока
