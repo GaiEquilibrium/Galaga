@@ -8,11 +8,12 @@ namespace Galaga
     public enum OnLevelStates
     {
         LevelStart,
-        MovingStart,
         Moving,
         MovingEnd,
         MovingInFormation,
         InMainFormation,
+        Waiting, //вероятно только так можно нормально написать что бы противники выходили отдельными волнами
+        Destroed //что бы воткнуть наконец нормальную проверку необходимости убирать объект с поля
     }
 
     public class Enemy : Ship
@@ -25,11 +26,12 @@ namespace Galaga
         public Vector2 SubFormationOffset;
         public int EnemyId { get; }
         private Dictionary<Vector2, bool> waypoints; //is moving aroud, and point
-        protected static String SettingsFile = @"Settings/enemies.txt";
+        protected static String SettingsFile = @"Parameters/enemies.txt";
         protected Dictionary<Vector2, bool>.Enumerator Enumerator;
-        protected KeyValuePair<Vector2, bool> currentWaypoint;
-        protected bool waypointsNotEnd;
+        protected KeyValuePair<Vector2, bool> CurrentWaypoint;
+        protected bool WaypointsNotEnd;
 
+        private float radius;
         //написать более толковую систему анимации
         //        private int stage;
         //        public const int maxStage = 4;
@@ -45,7 +47,7 @@ namespace Galaga
             velocity.X = 0;
             velocity.Y = 0;
 
-            InGameState = OnLevelStates.LevelStart;
+            InGameState = OnLevelStates.Waiting;
             Belonging = Belonging.Enemy;
 
             SubFormationOffset.X = -1;
@@ -54,12 +56,12 @@ namespace Galaga
             waypoints = new Dictionary<Vector2, bool>();
         }
 
-        public Enemy(int id, Vector2 startPosition, Vector2 formationOffset, String enemyType)
+        public Enemy(int id, Vector2 startPosition, Vector2 formationOffset, String enemyType, Dictionary<Vector2, bool> startWaypoints)
         {
             velocity.X = 0;
             velocity.Y = 0;
 
-            InGameState = OnLevelStates.LevelStart;
+            InGameState = OnLevelStates.Waiting;
 
             GameObject = GameObject.Enemy;
             Belonging = Belonging.Enemy;
@@ -70,7 +72,7 @@ namespace Galaga
             MainFormationOffset = formationOffset;
             EnemyId = id;
 
-            waypoints = new Dictionary<Vector2, bool>();
+            waypoints = new Dictionary<Vector2, bool>(startWaypoints);
             using (StreamReader sr = File.OpenText(SettingsFile))
             {
                 String readedString;
@@ -85,26 +87,30 @@ namespace Galaga
                         if ((tmpDataString = sr.ReadLine()) == null) break;
                         cost = int.Parse(tmpDataString.Substring(tmpDataString.IndexOf(' ')));
 
-                        //if ((tmpDataString = sr.ReadLine()) == null) break;
-                        //position = new Vector2(
-                        //    Convert.ToSingle(tmpDataString.Substring(tmpDataString.IndexOf('x') + 1,
-                        //        tmpDataString.LastIndexOf(' ') - tmpDataString.IndexOf('x'))),
-                        //    Convert.ToSingle(tmpDataString.Substring(tmpDataString.IndexOf('y') + 1)));
-                        //позиция будет читаться из другого файла
-
-                        position = startPosition;
                         break;
-
                     }
                 }
             }
-            waypoints.Add(new Vector2(2, 5), true);
-            waypoints.Add(new Vector2(2, -5), false);
-
-            //надо разобраться с тем, как с этим работать =\
-            //https://msdn.microsoft.com/ru-ru/library/k3z2hhax(v=vs.110).aspx
-            //var test = waypoints.GetEnumerator();
+            position = startPosition;
+            
+            //стандартные вэйпоинты надо будет читать после того, как будет в первый раз переходить в формацию, 
+            //или уводить с поля и удалять, если нет позиции в формации
+            //а после создания, используются вэйпоинты из файла уровня
+            velocity = new Vector2(0, MaxSpeed);
+            Enumerator = waypoints.GetEnumerator();
+            WaypointsNotEnd = Enumerator.MoveNext();
+            CurrentWaypoint = Enumerator.Current;
+            WaypointsNotEnd = Enumerator.MoveNext();
+            radius = 0;
         }
+
+        private bool ReadParameters()
+        {
+            //сюда надо перетащить процесс чтения параметров
+            //хотя надо ли???
+            return true;
+        }
+
         #endregion
 
         #region Updaters
@@ -112,19 +118,27 @@ namespace Galaga
         {
             switch (InGameState)
             {
-                case OnLevelStates.LevelStart:
+                case OnLevelStates.Waiting:
                 {
                     StateChanger();
                     break;
                 }
-                case OnLevelStates.MovingStart:
+                case OnLevelStates.LevelStart:
                 {
+                    Moving();
+//                    StateChanger();
                     break;
                 }
                 case OnLevelStates.InMainFormation:
                 {
-                    position = Level.MainFormation.Position + MainFormationOffset;
-                    StateChanger();//надо придумать проверку на возможность вылета
+
+                    if (GameStates.GameState == GameState.LevelLoad) position = Formation.Position + MainFormationOffset;
+                    else if (GameStates.GameState == GameState.Game)
+                    {
+                        position.X = FormationOffset.X * Formation.OffsetCoefficient + Formation.Position.X;
+                        position.Y = FormationOffset.Y + Formation.Position.Y;
+                    }
+                    //StateChanger();//надо придумать проверку на возможность вылета
                     break;
                 }
                 case OnLevelStates.Moving:
@@ -134,7 +148,7 @@ namespace Galaga
                 }
                 case OnLevelStates.MovingEnd:
                 {
-                    Moving();
+                    MoveToMainFormation();
                     break;
                 }
                 case OnLevelStates.MovingInFormation:
@@ -148,22 +162,23 @@ namespace Galaga
         {
             switch (InGameState)
             {
-                case OnLevelStates.LevelStart:
+                case OnLevelStates.Waiting:
                 {
-                    InGameState = OnLevelStates.InMainFormation; //временно
+                    InGameState = OnLevelStates.LevelStart;
                     break;
                 }
-                case OnLevelStates.MovingStart:
+                case OnLevelStates.LevelStart:
                 {
+                    InGameState = OnLevelStates.MovingEnd; //временно
                     break;
                 }
                 case OnLevelStates.InMainFormation:
                 {
                     velocity = new Vector2(0, MaxSpeed);
                     Enumerator = waypoints.GetEnumerator();
-                    waypointsNotEnd = Enumerator.MoveNext();
-                    currentWaypoint = Enumerator.Current;
-                    waypointsNotEnd = Enumerator.MoveNext();
+                    WaypointsNotEnd = Enumerator.MoveNext();
+                    CurrentWaypoint = Enumerator.Current;
+                    WaypointsNotEnd = Enumerator.MoveNext();
                     InGameState = OnLevelStates.Moving;
                     break;
                 }
@@ -195,32 +210,18 @@ namespace Galaga
         //velocity must be equal to 0.3    
         protected new void Moving()
         {
-            switch (InGameState)
+            if (WaypointsNotEnd)
             {
-                case OnLevelStates.Moving:
-                {
-                    if (waypointsNotEnd)
-                    {
-                        if (currentWaypoint.Value)
-                            MoveAround(currentWaypoint.Key);
-                        else
-                            MoveTo(currentWaypoint.Key);
-                        break;
-                    }
-                    if (currentWaypoint.Value)
-                        MoveAround(currentWaypoint.Key);
-                    else
-                        MoveTo(currentWaypoint.Key);
-                    break;
-                }
-                case OnLevelStates.MovingEnd:
-                {
-                    MoveToMainFormation();
-                    break;
-                }
-                default:
-                    break;
+                if (CurrentWaypoint.Value)
+                    MoveAround(CurrentWaypoint.Key);
+                else
+                    MoveTo(CurrentWaypoint.Key);
+                return;
             }
+            if (CurrentWaypoint.Value)
+                MoveAround(CurrentWaypoint.Key);
+            else
+                MoveTo(CurrentWaypoint.Key);
         }
 
         private void MoveTo(Vector2 point)
@@ -231,13 +232,13 @@ namespace Galaga
             velocity = unitVelocity;
             base.Moving();
 
-            if (Math.Abs(Position.X - currentWaypoint.Key.X) < 0.2 &&
-                Math.Abs(Position.Y - currentWaypoint.Key.Y) < 0.2)
+            if (Math.Abs(Position.X - CurrentWaypoint.Key.X) < 0.2 &&
+                Math.Abs(Position.Y - CurrentWaypoint.Key.Y) < 0.2)
             {
-                if (waypointsNotEnd)
+                if (WaypointsNotEnd)
                 {
-                    currentWaypoint = Enumerator.Current;
-                    waypointsNotEnd = Enumerator.MoveNext();
+                    CurrentWaypoint = Enumerator.Current;
+                    WaypointsNotEnd = Enumerator.MoveNext();
                 }
                 else
                 {
@@ -248,12 +249,16 @@ namespace Galaga
 
         private void MoveAround(Vector2 point)
         {
-            float radius = (float)Math.Sqrt((point.X - position.X) * (point.X - position.X) +
-                                             (point.Y - position.Y) * (point.Y - position.Y));
-            float angularVelocity = MaxSpeed / radius;
+            if (radius == 0)
+            {
+                radius = (float) Math.Sqrt((point.X - position.X) * (point.X - position.X) +
+                                                 (point.Y - position.Y) * (point.Y - position.Y));
+            }
+            float angularVelocity = (float) (Math.PI / (radius * Math.PI / MaxSpeed));
             Vector2 unitVector = (point - position) / radius;
             Vector2 acceleration = MaxSpeed * angularVelocity * unitVector;
             velocity += acceleration;
+
             base.Moving();
 
             float direction;
@@ -273,20 +278,36 @@ namespace Galaga
                 }
             }
 
-            if (waypointsNotEnd && Math.Abs(direction - DirectionCalc(position, Enumerator.Current.Key)) < 0.15)
+            if (WaypointsNotEnd &&
+                Math.Abs(direction - DirectionCalc(position, Enumerator.Current.Key)) < angularVelocity * 0.5 + 0.05 &&
+                !Enumerator.Current.Value)
             {
-                currentWaypoint = Enumerator.Current;
-                waypointsNotEnd = Enumerator.MoveNext();
+                radius = 0;
+                CurrentWaypoint = Enumerator.Current;
+                WaypointsNotEnd = Enumerator.MoveNext();
             }
-            else if (!waypointsNotEnd && Math.Abs(direction - DirectionCalc(position, Level.MainFormation.Position + MainFormationOffset)) < 0.15)
+            else if (WaypointsNotEnd && Math.Abs((float) Math.Sqrt(
+                         (Enumerator.Current.Key.X - position.X) * (Enumerator.Current.Key.X - position.X) +
+                         (Enumerator.Current.Key.Y - position.Y) * (Enumerator.Current.Key.Y - position.Y))) <=
+                     radius && Enumerator.Current.Value)
             {
+                radius = 0;
+                CurrentWaypoint = Enumerator.Current;
+                WaypointsNotEnd = Enumerator.MoveNext();
+            }
+            else if (!WaypointsNotEnd &&
+                     Math.Abs(direction - DirectionCalc(position, Formation.Position + MainFormationOffset)) <
+                     angularVelocity * 0.5 + 0.05)
+            {
+                radius = 0;
                 StateChanger();
             }
         }
 
         private void MoveToMainFormation()
         {
-            Vector2 moveToPoint = Level.MainFormation.Position + MainFormationOffset;
+            //добавить проверку на то, есть ли вобще место в формации
+            Vector2 moveToPoint = Formation.Position + MainFormationOffset;   //переписать так же как уже написал для update
             Vector2 unitVelocity = (moveToPoint - position) /
                                    (float)Math.Sqrt((moveToPoint.X - position.X) * (moveToPoint.X - position.X) +
                                                      (moveToPoint.Y - position.Y) * (moveToPoint.Y - position.Y)) * MaxSpeed;
@@ -300,8 +321,15 @@ namespace Galaga
             }
         }
 
-        public bool IsMoving => OnLevelStates.Moving == InGameState;
+        private bool ReadstandartWaypoints()
+        {
+            waypoints.Clear();
+
+            return true;
+        }
         #endregion
+
+        public OnLevelStates GetInGameState => InGameState;
 
         public Bullet Shoot()
         {

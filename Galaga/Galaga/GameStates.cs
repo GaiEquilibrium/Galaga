@@ -6,12 +6,14 @@
 
     //предположительно примерно всё, единственное что вероятно надобно будет добавить всякой мелочи из глобальных переменных
 
+    //вероятно сюда, надо добавить переключение уровней, или что то в подобном духе
     public enum GameState
     {
         MainMenu,
-        StartNewGame,
+//        StartNewGame,//хм, а не лишнее ли это?
         LevelLoad,
         Game,
+        LevelEnd,
         GameOver,
         Pause,
         Exit,
@@ -30,7 +32,7 @@
     static class GameStates
     {
         public static GameState GameState { get; private set; }
-        public static bool IsGame => GameState == GameState.Game;
+        public static bool IsGame => GameState == GameState.Game || GameState == GameState.LevelLoad || GameState == GameState.LevelEnd;
         public static bool IsMenu => GameState == GameState.MainMenu || GameState == GameState.Pause || GameState == GameState.GameOver;
 
         static GameStates()

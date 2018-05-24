@@ -4,13 +4,115 @@
 
 namespace Galaga
 {
-    static class LevelUpdater
+    static partial class Level
     {
         private static bool _completeCheck = false; //проверка завершённостей циклов проверки
         private static bool _hitCheck = false;
-        public static void Update()
+
+        private static void commonUpdate()
+        {
+            foreach (KeyValuePair<int, Player> player in Level.Players) { player.Value.Update(); }
+
+            while (!_completeCheck)
+            {
+                _completeCheck = true;
+                foreach (Bullet bullet in Level.Bullets)
+                {
+                    if (bullet.IsComplete)
+                    {
+                        Level.Bullets.Remove(bullet);
+                        _completeCheck = false;
+                        break;
+                    }
+                    _completeCheck = true;
+                }
+            }
+            foreach (Bullet bullet in Level.Bullets) { bullet.Update(); }
+            //            Level.MainFormation.Update();
+
+
+            //стрельба игрока
+            foreach (KeyValuePair<int, Player> player in Level.Players)
+            {
+                Bullet shoot = null;
+                if (player.Value.WantShoot) shoot = player.Value.Shoot();
+                if (shoot != null) Level.Bullets.Add(shoot);
+            }
+
+            //проверка попаданий
+            _completeCheck = false;
+            while (!_completeCheck)
+            {
+                _completeCheck = false;
+                foreach (Bullet bullet in Level.Bullets)
+                {
+                    foreach (var enemy in Level.Enemies)
+                    {
+                        if (enemy.Value.IsHit(bullet))
+                        {
+                            Level.Players[bullet.PlayerId].AddToScore(enemy.Value.Cost);
+//                            Level.MainFormation.Remove(enemy.Value);
+                            Level.Enemies.Remove(enemy.Key);
+                            bullet.IsComplete = true;
+                            Level.Bullets.Remove(bullet);
+                            //                            blastList.Add(new Blast(GlobalVariables.GetCenterEnemyPosition() + enemy.GetCenterOffset(), false));
+                            _hitCheck = true;
+                            break;
+                        }
+                    }
+                    if (_hitCheck) break;
+                    foreach (KeyValuePair<int, Player> player in Level.Players)
+                    {
+                        if (player.Value.IsHit(bullet))
+                        {
+                            //                            blastList.Add(new Blast(player.GetPos(), true)); //не менять положение
+                            player.Value.Reset();
+                            if (player.Value.LifeNum <= 0)
+                            {
+                                GameStates.LevelStateChanger();//для одиночного варианта так
+                                Level.Players.Remove(player.Key);
+                            }
+                            bullet.IsComplete = true;
+                            Level.Bullets.Remove(bullet);
+                            _hitCheck = true;
+                        }
+                    }
+                    if (_hitCheck) break;
+                }
+                if (_hitCheck) _hitCheck = false;
+                else _completeCheck = true;
+            }
+        }
+
+        private static void loadUpdate()
+        {
+            if (_lastInWave[_currentWave] >= 0)
+            {
+                if (Enemies.ContainsKey(_lastInWave[_currentWave]))
+                {
+                    if (Enemies[_lastInWave[_currentWave]].GetInGameState == OnLevelStates.InMainFormation)
+                        _currentWave++;
+                }
+                else
+                {
+                    _lastInWave[_currentWave]--;
+                }
+            }
+            else
+            {
+                _currentWave++;
+            }
+            foreach (var enemy in Enemies)
+            {
+                if (enemy.Key <= _lastInWave[_currentWave]) enemy.Value.Update();
+            }
+            commonUpdate();
+        }
+
+        private static void GameUpdate()
         {
             //нафиг отсюда обработку входящих действий игрока, тут только обновление его состояний
+
 
             foreach (var enemy in Level.Enemies)
             {
@@ -56,7 +158,7 @@ namespace Galaga
                         if (enemy.Value.IsHit(bullet))
                         {
                             Level.Players[bullet.PlayerId].AddToScore(enemy.Value.Cost);
-                            Level.MainFormation.Remove(enemy.Value);
+//                            Level.MainFormation.Remove(enemy.Value);
                             Level.Enemies.Remove(enemy.Key);
                             bullet.IsComplete = true;
                             Level.Bullets.Remove(bullet);
@@ -173,5 +275,6 @@ namespace Galaga
                             }*/
             //                score.PrepareToRender(player.GetScore().ToString());
         }
+
     }
 }

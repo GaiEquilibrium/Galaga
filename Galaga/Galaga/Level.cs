@@ -1,18 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 using OpenTK;
 
 namespace Galaga
 {
-    public static class Level
+    public static partial class Level
     {
         public static readonly Dictionary<int,Player> Players;
         public static readonly Dictionary<int,Enemy> Enemies;
         public static readonly List<Bullet> Bullets;
-        public static Formation MainFormation;
 
+        private static int[] _lastInWave;
+        private static int _currentWave;
+
+        private static int levelNumber, bonusLevelNumber;
         private static int _playersCount = 1;//временно
         private static int _playerId;
         private static int _enemyId;
+        private static XmlDocument level;
+        private static bool _xmlIsLoaded;
 
         static Level()
         {
@@ -21,14 +29,32 @@ namespace Galaga
             Bullets = new List<Bullet>();
             _playerId = -1;
             _enemyId = -1;
+            levelNumber = 0;
+            bonusLevelNumber = 0;
+            level = new XmlDocument();
+            _currentWave = 0;
+            _xmlIsLoaded = false;
         }
 
-        private static void Load()
+        public static void Clear()
         {
-            Enemies.Clear();
             Players.Clear();
+            Enemies.Clear();
+            Bullets.Clear();
             _playerId = -1;
             _enemyId = -1;
+            _currentWave = 0;
+            _xmlIsLoaded = false;
+        }
+
+        private static bool Load()
+        {
+//            Enemies.Clear();
+//            Players.Clear();
+//            _playerId = -1;
+//            _enemyId = -1;
+//            _currentWave = 0;
+            Clear();
 
             for (int i = 0; i < _playersCount; i++) //хреновая система
             {
@@ -37,22 +63,129 @@ namespace Galaga
                 KeyboardInput.SetPlayerId(tmpPlayer.PlayerId);
             }
 
-//            for (int i = 0; i < 10; i++)
-//            {
-//                Enemy tmpEnemy = new Enemy(EnemyId,0, new Vector2(i - 5, 3), new Vector2(i, 0));
-//                Enemies.Add(tmpEnemy.EnemyId,tmpEnemy);
-//            }
-//            for (int i = 0; i < 10; i++)
-//            {
-//                Enemy tmpEnemy = new Enemy(EnemyId, 0, new Vector2(i - 5, 4), new Vector2(i, 1));
-//                Enemies.Add(tmpEnemy.EnemyId, tmpEnemy);
-//            }
+            levelNumber++;
+            if (levelNumber == 5) //или другие номера, когда должен быть бонусный уровень
+            {
+                bonusLevelNumber++;
+                level.Load(@"Levels/bonus_level" + bonusLevelNumber + ".xml");
+            }
+            else
+            {
+                level.Load(@"Levels/level" + (levelNumber - bonusLevelNumber) + ".xml");
+            }
+            XmlLevelReader();
 
-            Enemy tmpEnemy = new Enemy(EnemyId,new Vector2(0,5), Vector2.Zero, "Bee");
-            Enemies.Add(tmpEnemy.EnemyId,tmpEnemy);
-
-            MainFormation = new Formation(Enemies);
+            return true;
         }
+
+        private static bool XmlLevelReader()
+        {
+            //хммм
+            Enemy tmpEnemy;
+            String enemyType = "";
+            String vector2InString = "";
+            Vector2 startPoint = Vector2.Zero, formationOffset = Vector2.Zero;
+            XmlElement xmlRoot = level.DocumentElement;
+            Dictionary<Vector2, bool> startWaypoints = new Dictionary<Vector2, bool>();
+            _lastInWave = new int[int.Parse(xmlRoot.FirstChild.InnerText)];
+
+            foreach (XmlNode xmlWaves in xmlRoot)
+            {
+                if (xmlWaves.Name != "quantity")
+                {
+                    foreach (XmlNode xmlWaveChild in xmlWaves.ChildNodes)
+                    {
+                        if (xmlWaveChild.Name == "waypoints")
+                        {
+                            startWaypoints.Clear();
+                            foreach (XmlNode waypoint in xmlWaveChild.ChildNodes)
+                            {
+                                bool moveType = false;
+                                foreach (XmlNode waypointProperty in waypoint.ChildNodes)
+                                {
+                                    if (waypointProperty.Name == "movingType" &&
+                                        waypointProperty.InnerText == "arround") moveType = true;
+                                    if (waypointProperty.Name == "position")
+                                    {
+                                        vector2InString = waypointProperty.InnerText;
+                                        vector2InString = vector2InString.Replace('.', ',');
+                                        try
+                                        {
+                                            startPoint.X =
+                                                float.Parse(vector2InString.Substring(0, vector2InString.IndexOf(' ')));
+                                            startPoint.Y =
+                                                float.Parse(vector2InString.Substring(vector2InString.IndexOf(' ')));
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine(e);
+                                            return false;
+                                            //throw;
+                                        }
+                                    }
+                                }
+                                startWaypoints.Add(startPoint, moveType);
+                            }
+                        }
+                        if (xmlWaveChild.Name == "enemies")
+                        {
+                            foreach (XmlNode enemy in xmlWaveChild.ChildNodes)
+                            {
+
+                                foreach (XmlNode enemyProperty in enemy.ChildNodes)
+                                {
+                                    if (enemyProperty.Name == "type") enemyType = enemyProperty.InnerText;
+                                    if (enemyProperty.Name == "startPoint")
+                                    {
+                                        vector2InString = enemyProperty.InnerText;
+                                        vector2InString = vector2InString.Replace('.', ',');
+                                        try
+                                        {
+                                            startPoint.X =
+                                                float.Parse(vector2InString.Substring(0, vector2InString.IndexOf(' ')));
+                                            startPoint.Y =
+                                                float.Parse(vector2InString.Substring(vector2InString.IndexOf(' ')));
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine(e);
+                                            return false;
+                                            //throw;
+                                        }
+                                    }
+                                    if (enemyProperty.Name == "formationOffset")
+                                    {
+                                        vector2InString = enemyProperty.InnerText;
+                                        vector2InString = vector2InString.Replace('.', ',');
+                                        try
+                                        {
+                                            formationOffset.X =
+                                                float.Parse(vector2InString.Substring(0, vector2InString.IndexOf(' ')));
+                                            formationOffset.Y =
+                                                float.Parse(vector2InString.Substring(vector2InString.IndexOf(' ')));
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine(e);
+                                            return false;
+                                            //throw;
+                                        }
+                                    }
+                                }
+                                tmpEnemy = new Enemy(EnemyId, startPoint, formationOffset, enemyType, startWaypoints);
+                                Enemies.Add(tmpEnemy.EnemyId, tmpEnemy);
+                            }
+                            _lastInWave[_currentWave] = Enemies.Last().Key;
+                            _currentWave++;
+                        }
+                    }
+                }
+            }
+            _xmlIsLoaded = true;
+            _currentWave = 0;
+            return true;
+        }
+
 
         public static void Update()   //переписать вообще целиком
         {
@@ -60,13 +193,20 @@ namespace Galaga
             {
                 case GameState.LevelLoad:
                 {
-                    Load();
-                    GameStates.LevelStateChanger();
+                    if (!_xmlIsLoaded)
+                    {
+                        Load();
+                    }
+                    else if (Enemies.Last().Value.GetInGameState == OnLevelStates.Waiting)
+                    {
+                        loadUpdate();
+                    }
+                    else GameStates.LevelStateChanger();
                     break;
                 }
                 case GameState.Game:
                 {
-                    LevelUpdater.Update();
+                    GameUpdate();
                     break;
                 }
                 case GameState.Exit:
@@ -94,6 +234,13 @@ namespace Galaga
                 _enemyId++;
                 return _enemyId;
             }
+        }
+
+        private static String GetCurrentLevel()
+        {
+            levelNumber++;
+            if (levelNumber == 5) return "BonusLevel" + 1;
+            return "Level" + levelNumber;
         }
     }
 }

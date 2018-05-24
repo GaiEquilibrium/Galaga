@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<waves>
+  <quantity>5</quantity>
+  <wave>
+    <waypoints>
+      <waypoint>
+        <position>0 0</position>
+        <movingType>passing</movingType>
+      </waypoint>
+      <waypoint>
+        <position>1 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+      <waypoint>
+        <position>1.001 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+    </waypoints>
+    <enemies>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>11 -3</startPoint>
+        <formationOffset>0 0</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>12 -4</startPoint>
+        <formationOffset>1 0</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>13 -5</startPoint>
+        <formationOffset>2 0</formationOffset>
+      </enemy>
+    </enemies>
+  </wave>
+
+  <wave>
+    <waypoints>
+      <waypoint>
+        <position>0 0</position>
+        <movingType>passing</movingType>
+      </waypoint>
+      <waypoint>
+        <position>-1 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+      <waypoint>
+        <position>-1.001 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+    </waypoints>
+    <enemies>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-11 -3</startPoint>
+        <formationOffset>0 1</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-12 -4</startPoint>
+        <formationOffset>1 1</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-13 -5</startPoint>
+        <formationOffset>2 1</formationOffset>
+      </enemy>
+    </enemies>
+  </wave>
+
+  <wave>
+    <waypoints>
+      <waypoint>
+        <position>0 0</position>
+        <movingType>passing</movingType>
+      </waypoint>
+      <waypoint>
+        <position>1 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+      <waypoint>
+        <position>0.999 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+    </waypoints>
+    <enemies>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>11 -3</startPoint>
+        <formationOffset>-1 0</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>12 -4</startPoint>
+        <formationOffset>-2 0</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>13 -5</startPoint>
+        <formationOffset>-3 0</formationOffset>
+      </enemy>
+    </enemies>
+  </wave>
+
+  <wave>
+    <waypoints>
+      <waypoint>
+        <position>0 0</position>
+        <movingType>passing</movingType>
+      </waypoint>
+      <waypoint>
+        <position>-1 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+      <waypoint>
+        <position>-1.002 0.998</position>
+        <movingType>arround</movingType>
+      </waypoint>
+    </waypoints>
+    <enemies>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-11 -3</startPoint>
+        <formationOffset>-1 1</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-12 -4</startPoint>
+        <formationOffset>-2 1</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-13 -5</startPoint>
+        <formationOffset>-3 1</formationOffset>
+      </enemy>
+    </enemies>
+  </wave>
+
+  <wave>
+    <waypoints>
+      <waypoint>
+        <position>0 0</position>
+        <movingType>passing</movingType>
+      </waypoint>
+      <waypoint>
+        <position>-1 1</position>
+        <movingType>arround</movingType>
+      </waypoint>
+      <waypoint>
+        <position>-1.000 0.998</position>
+        <movingType>arround</movingType>
+      </waypoint>
+    </waypoints>
+    <enemies>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-11 -3</startPoint>
+        <formationOffset>2 2</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-12 -4</startPoint>
+        <formationOffset>1 2</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-13 -5</startPoint>
+        <formationOffset>0 2</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-14 -6</startPoint>
+        <formationOffset>-1 2</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-15 -7</startPoint>
+        <formationOffset>-2 2</formationOffset>
+      </enemy>
+      <enemy>
+        <type>Bee</type>
+        <startPoint>-16 -8</startPoint>
+        <formationOffset>-3 2</formationOffset>
+      </enemy>
+    </enemies>
+  </wave>
+</waves>
